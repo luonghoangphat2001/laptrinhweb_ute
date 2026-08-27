@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gong Cha Vietnam - Static Homepage</title>
+    <title>Gong Cha Milk Tea Shop</title>
     <meta
       name="description"
-      content="Static HTML/CSS recreation of the Gong Cha Vietnam homepage layout for local study/demo use."
+      content="Gong Cha Milk Tea Shop với sản phẩm trà sữa, tùy chọn size, topping và giỏ hàng trực tuyến."
     />
     <link rel="stylesheet" href="css/style.css" />
   </head>
@@ -85,6 +85,12 @@
             <img src="img/hero-bi-dao.jpg" alt="Bí Đao Mộc Hoa" />
           </figure>
         </div>
+        <div class="hero-content container">
+          <span>GONG CHA MILK TEA SHOP</span>
+          <h1>Brewing happiness<br />in every cup.</h1>
+          <p>Khám phá hương trà nguyên bản cùng những topping bạn yêu thích.</p>
+          <a class="button light" href="#menu">KHÁM PHÁ THỰC ĐƠN</a>
+        </div>
         <div class="hero-dots" aria-hidden="true">
           <span></span><span></span><span></span>
         </div>
@@ -125,53 +131,57 @@
       <section class="promotions section" id="news">
         <div class="container">
           <div class="section-heading center">
-            <span class="eyebrow">PROMOTIONS</span>
-            <h2>Tin tức & Ưu đãi</h2>
-            <p>Khám phá các chương trình và hương vị mới nhất.</p>
+            <span class="eyebrow">BEST SELLERS</span>
+            <h2>Trà sữa nổi bật</h2>
+            <p>Khám phá ba hương vị trà sữa được yêu thích tại Gong Cha.</p>
           </div>
 
           <div class="promo-grid">
             <article class="promo-card">
               <div class="promo-thumb">
-                <img src="img/hero-cocoa.jpg" alt="" />
+                <img src="img/hero-cocoa.jpg" alt="Dark Cocoa Smoothie" />
               </div>
               <div class="promo-body">
-                <div class="promo-date">THÁNG 08 • 2026</div>
-                <h3>Dark Cocoa</h3>
+                <div class="promo-date">MILK TEA SERIES</div>
+                <h3>Dark Cocoa Smoothie</h3>
                 <p>
-                  Một lựa chọn đậm vị cacao với phần kem sữa mềm mịn và thiết kế
-                  tối giản.
+                  Đá xay cacao mát lạnh, đậm vị và mịn màng cho những ngày cần
+                  một món ngọt.
                 </p>
-                <a href="#">XEM THÊM</a>
+                <strong class="product-price">48.000đ</strong>
+                <a href="#smoothie" data-series-target="smoothie">XEM THÊM</a>
               </div>
             </article>
 
             <article class="promo-card">
               <div class="promo-thumb">
-                <img src="img/hero-thai.jpg" alt="" />
+                <img src="img/hero-thai.jpg" alt="Trà Thái Oolong Sữa" />
               </div>
               <div class="promo-body">
-                <div class="promo-date">THÁNG 07 • 2026</div>
+                <div class="promo-date">MILK TEA SERIES</div>
                 <h3>Trà Thái Oolong Sữa</h3>
                 <p>
-                  Hương trà thơm, màu sắc tươi sáng và lớp sữa tạo cảm giác mượt
-                  mà.
+                  Hương trà Oolong thơm thanh hòa quyện cùng vị sữa ngọt dịu,
+                  mượt mà.
                 </p>
-                <a href="#">XEM THÊM</a>
+                <strong class="product-price">45.000đ</strong>
+                <a href="#milk" data-series-target="milk">XEM THÊM</a>
               </div>
             </article>
 
             <article class="promo-card">
               <div class="promo-thumb">
-                <img src="img/hero-bi-dao.jpg" alt="" />
+                <img src="img/hero-bi-dao.jpg" alt="Trà Sữa Bí Đao" />
               </div>
               <div class="promo-body">
-                <div class="promo-date">THÁNG 06 • 2026</div>
-                <h3>Bí Đao Mộc Hoa</h3>
+                <div class="promo-date">MILK TEA SERIES</div>
+                <h3>Trà Sữa Bí Đao</h3>
                 <p>
-                  Phong vị thanh mát, phối cùng sắc xanh tự nhiên cho mùa hè.
+                  Vị bí đao thanh mát kết hợp cùng sữa thơm nhẹ, phù hợp cho ngày
+                  hè.
                 </p>
-                <a href="#">XEM THÊM</a>
+                <strong class="product-price">42.000đ</strong>
+                <a href="#creative" data-series-target="creative">XEM THÊM</a>
               </div>
             </article>
           </div>
@@ -240,23 +250,23 @@
             <h2>Thực đơn Gong Cha</h2>
           </div>
 
-          <div class="menu-tabs">
-            <a class="active" href="#signature">Gong Cha Signature Drink</a>
-            <a href="#brewed">Brewed Tea Series</a>
-            <a href="#milk">Milk Tea Series</a>
-            <a href="#smoothie">Smoothie Series</a>
-            <a href="#creative">Creative Series</a>
+          <div class="menu-tabs" role="tablist" aria-label="Danh mục thức uống">
+            <a class="active" href="#signature" data-series="signature" role="tab" aria-selected="true">Gong Cha Signature Drink</a>
+            <a href="#brewed" data-series="brewed" role="tab" aria-selected="false">Brewed Tea Series</a>
+            <a href="#milk" data-series="milk" role="tab" aria-selected="false">Milk Tea Series</a>
+            <a href="#smoothie" data-series="smoothie" role="tab" aria-selected="false">Smoothie Series</a>
+            <a href="#creative" data-series="creative" role="tab" aria-selected="false">Creative Series</a>
           </div>
 
-          <div class="menu-showcase" id="signature">
+          <div class="menu-showcase" id="seriesPanel" role="tabpanel">
             <div class="menu-art">
-              <img src="img/tea-cup.png" alt="Gong Cha Signature Drink" />
+              <img id="menuProductImage" src="img/tea-cup.png" alt="Gong Cha Signature Drink" />
             </div>
 
             <div class="menu-copy">
               <span class="menu-index">01</span>
-              <h3>Gong Cha Signature Drink</h3>
-              <p>
+              <h3 id="menuProductName">Gong Cha Signature Drink</h3>
+              <p id="menuProductDescription">
                 Một khu vực nội dung hai cột: hình sản phẩm ở một bên, mô tả và
                 nút điều hướng ở bên còn lại. Bố cục giữ kích thước chữ và
                 khoảng cách lớn để gần phong cách trang tham chiếu.
@@ -274,7 +284,7 @@
                       data-price="45000"
                       checked
                     />
-                    <span>M <small>45.000đ</small></span>
+                    <span>M <small id="sizeMPrice">45.000đ</small></span>
                   </label>
                   <label>
                     <input
@@ -283,7 +293,7 @@
                       value="L"
                       data-price="55000"
                     />
-                    <span>L <small>55.000đ</small></span>
+                    <span>L <small id="sizeLPrice">55.000đ</small></span>
                   </label>
                 </div>
 

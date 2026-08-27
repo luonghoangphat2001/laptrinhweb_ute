@@ -12,6 +12,54 @@ document.addEventListener("DOMContentLoaded", function () {
   const cartItems = document.getElementById("cartItems");
   const cartSummary = document.getElementById("cartSummary");
   const cartTotal = document.getElementById("cartTotal");
+  const menuTabs = document.querySelectorAll(".menu-tabs [data-series]");
+  const productImage = document.getElementById("menuProductImage");
+  const productDescription = document.getElementById("menuProductDescription");
+  const sizeMPrice = document.getElementById("sizeMPrice");
+  const sizeLPrice = document.getElementById("sizeLPrice");
+  const sizeMInput = options.querySelector('input[name="quick-size"][value="M"]');
+  const sizeLInput = options.querySelector('input[name="quick-size"][value="L"]');
+  const toppingInputs = options.querySelectorAll('input[name="quick-topping"]');
+  const productLinks = document.querySelectorAll("[data-series-target]");
+  const seriesPanel = document.getElementById("seriesPanel");
+
+  const seriesData = {
+    signature: {
+      name: "Gong Cha Signature Drink",
+      description: "Trà nguyên bản kết hợp lớp milk foam mịn, béo nhẹ và đậm hương trà đặc trưng.",
+      image: "img/tea-cup.png",
+      sizeM: 45000,
+      sizeL: 55000,
+    },
+    brewed: {
+      name: "Pure Oolong Brewed Tea",
+      description: "Trà Oolong ủ tươi mỗi ngày với hương thơm thanh khiết và hậu vị dịu nhẹ.",
+      image: "img/hero-bi-dao.jpg",
+      sizeM: 35000,
+      sizeL: 45000,
+    },
+    milk: {
+      name: "Trà Thái Oolong Sữa",
+      description: "Hương trà Oolong thơm thanh hòa quyện cùng vị sữa ngọt dịu, mượt mà.",
+      image: "img/hero-thai.jpg",
+      sizeM: 45000,
+      sizeL: 55000,
+    },
+    smoothie: {
+      name: "Dark Cocoa Smoothie",
+      description: "Đá xay cacao mát lạnh, đậm vị và mịn màng cho những ngày cần một món ngọt.",
+      image: "img/hero-cocoa.jpg",
+      sizeM: 48000,
+      sizeL: 58000,
+    },
+    creative: {
+      name: "Trà Sữa Bí Đao",
+      description: "Vị bí đao thanh mát kết hợp cùng sữa thơm nhẹ, phù hợp cho ngày hè.",
+      image: "img/hero-bi-dao.jpg",
+      sizeM: 42000,
+      sizeL: 52000,
+    },
+  };
 
   if (
     !options ||
@@ -20,7 +68,20 @@ document.addEventListener("DOMContentLoaded", function () {
     !cartMessage ||
     !productName ||
     !cartToggle ||
-    !miniCart
+    !miniCart ||
+    !cartClose ||
+    !cartCount ||
+    !cartEmpty ||
+    !cartItems ||
+    !cartSummary ||
+    !cartTotal ||
+    !productImage ||
+    !productDescription ||
+    !sizeMPrice ||
+    !sizeLPrice ||
+    !sizeMInput ||
+    !sizeLInput ||
+    menuTabs.length === 0
   )
     return;
 
@@ -49,6 +110,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
   options.addEventListener("change", updateTotal);
 
+  menuTabs.forEach(function (tab) {
+    tab.addEventListener("click", function (event) {
+      event.preventDefault();
+      const seriesKey = tab.dataset.series;
+      const selectedSeries = seriesData[seriesKey];
+      if (!selectedSeries) return;
+
+      menuTabs.forEach(function (menuTab) {
+        const isActive = menuTab === tab;
+        menuTab.classList.toggle("active", isActive);
+        menuTab.setAttribute("aria-selected", String(isActive));
+      });
+
+      productName.textContent = selectedSeries.name;
+      productDescription.textContent = selectedSeries.description;
+      productImage.src = selectedSeries.image;
+      productImage.alt = selectedSeries.name;
+      sizeMInput.dataset.price = String(selectedSeries.sizeM);
+      sizeLInput.dataset.price = String(selectedSeries.sizeL);
+      sizeMPrice.textContent = formatPrice(selectedSeries.sizeM);
+      sizeLPrice.textContent = formatPrice(selectedSeries.sizeL);
+      sizeMInput.checked = true;
+      toppingInputs.forEach(function (topping) {
+        topping.checked = false;
+      });
+      window.history.replaceState(null, "", "#" + seriesKey);
+      updateTotal();
+    });
+  });
+
+  productLinks.forEach(function (productLink) {
+    productLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      const targetSeries = productLink.dataset.seriesTarget;
+      const targetTab = Array.from(menuTabs).find(function (tab) {
+        return tab.dataset.series === targetSeries;
+      });
+
+      if (!targetTab || !seriesPanel) return;
+      targetTab.click();
+      seriesPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
   function renderCart() {
     const itemCount = cart.length;
     cartCount.textContent = itemCount;
@@ -58,9 +163,10 @@ document.addEventListener("DOMContentLoaded", function () {
     cartItems.innerHTML = "";
 
     let total = 0;
-    cart.forEach(function (item) {
+    cart.forEach(function (item, itemIndex) {
       total += item.price;
       const itemElement = document.createElement("article");
+      const removeButton = document.createElement("button");
       itemElement.className = "cart-item";
       itemElement.innerHTML =
         "<h3>" +
@@ -75,6 +181,15 @@ document.addEventListener("DOMContentLoaded", function () {
         '<strong class="cart-item-price">' +
         formatPrice(item.price) +
         "</strong>";
+      removeButton.className = "cart-item-remove";
+      removeButton.type = "button";
+      removeButton.dataset.itemIndex = String(itemIndex);
+      removeButton.textContent = "×";
+      removeButton.setAttribute(
+        "aria-label",
+        "Xóa " + item.name + " khỏi giỏ hàng",
+      );
+      itemElement.appendChild(removeButton);
       cartItems.appendChild(itemElement);
     });
 
@@ -92,6 +207,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   cartClose.addEventListener("click", function () {
     setCartVisibility(false);
+  });
+
+  cartItems.addEventListener("click", function (event) {
+    const removeButton = event.target.closest(".cart-item-remove");
+    if (!removeButton) return;
+
+    const itemIndex = Number(removeButton.dataset.itemIndex);
+    cart.splice(itemIndex, 1);
+    renderCart();
   });
 
   addToCartButton.addEventListener("click", function () {
@@ -131,6 +255,15 @@ document.addEventListener("DOMContentLoaded", function () {
       totalElement.textContent;
   });
 
-  updateTotal();
+  const initialSeries = window.location.hash.replace("#", "");
+  const initialTab = Array.from(menuTabs).find(function (tab) {
+    return tab.dataset.series === initialSeries;
+  });
+
+  if (initialTab) {
+    initialTab.click();
+  } else {
+    updateTotal();
+  }
   renderCart();
 });

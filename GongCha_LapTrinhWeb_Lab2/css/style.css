@@ -237,6 +237,26 @@ input {
   color: var(--brand);
   font-size: 14px;
 }
+.cart-item-remove {
+  position: absolute;
+  top: 14px;
+  right: 0;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 1px solid #ddd7cf;
+  border-radius: 50%;
+  background: #fff;
+  color: #777;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+.cart-item-remove:hover {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #fff;
+}
 .cart-summary {
   display: flex;
   justify-content: space-between;
@@ -259,6 +279,14 @@ input {
   position: relative;
   overflow: hidden;
   background: #111;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.58), transparent 58%);
 }
 .hero-track {
   position: relative;
@@ -286,6 +314,35 @@ input {
   height: 100%;
   object-fit: cover;
 }
+.hero-content {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+.hero-content span {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.hero-content h1 {
+  max-width: 620px;
+  margin: 0 0 15px;
+  font-family: var(--serif);
+  font-size: clamp(38px, 4vw, 62px);
+  font-weight: 400;
+  line-height: 1.06;
+}
+.hero-content p {
+  max-width: 480px;
+  margin: 0 0 24px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 15px;
+}
 @keyframes heroCycle {
   0% {
     opacity: 0;
@@ -305,6 +362,7 @@ input {
 }
 .hero-dots {
   position: absolute;
+  z-index: 3;
   bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
@@ -482,6 +540,14 @@ input {
   margin: 0 0 20px;
   color: #777;
 }
+.product-price {
+  display: block;
+  margin: -7px 0 14px;
+  color: var(--brand);
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 400;
+}
 .promo-body a {
   color: var(--brand);
   font-size: 11px;
@@ -611,6 +677,7 @@ input {
   grid-template-columns: 1fr 1fr;
   min-height: 640px;
   background: #faf9f6;
+  scroll-margin-top: 24px;
 }
 .menu-art {
   display: grid;
@@ -867,7 +934,7 @@ input {
     display: none;
   }
   .header-inner {
-    grid-template-columns: 78px 1fr;
+    grid-template-columns: 78px 1fr auto;
   }
   .story-copy {
     padding-left: 20px;
@@ -878,7 +945,7 @@ input {
     height: auto;
   }
   .header-inner {
-    grid-template-columns: 70px 1fr;
+    grid-template-columns: 70px 1fr auto;
     padding: 0;
   }
   .brand {
@@ -950,6 +1017,20 @@ input {
   }
   .hero-slide img {
     object-position: center;
+  }
+  .hero::after {
+    background: rgba(0, 0, 0, 0.42);
+  }
+  .hero-content h1 {
+    font-size: 34px;
+  }
+  .hero-content p {
+    max-width: 290px;
+    font-size: 13px;
+  }
+  .hero-content .button {
+    min-height: 39px;
+    padding: 0 18px;
   }
   .section-heading h2 {
     font-size: 31px;
