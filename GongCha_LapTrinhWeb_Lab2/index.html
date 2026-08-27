@@ -199,7 +199,45 @@
               Một khu vực nội dung hai cột: hình sản phẩm ở một bên, mô tả và nút điều hướng ở bên còn lại.
               Bố cục giữ kích thước chữ và khoảng cách lớn để gần phong cách trang tham chiếu.
             </p>
-            <a class="button outline" href="#">MENU</a>
+
+            <div class="quick-options" id="quickOptions">
+              <span class="quick-label">TÙY CHỌN SẢN PHẨM</span>
+              <h4>Chọn size</h4>
+              <div class="quick-size">
+                <label>
+                  <input type="radio" name="quick-size" value="M" data-price="45000" checked>
+                  <span>M <small>45.000đ</small></span>
+                </label>
+                <label>
+                  <input type="radio" name="quick-size" value="L" data-price="55000">
+                  <span>L <small>55.000đ</small></span>
+                </label>
+              </div>
+
+              <h4>Chọn topping</h4>
+              <div class="quick-toppings">
+                <label>
+                  <input type="checkbox" name="quick-topping" value="Pearl" data-price="10000">
+                  <span>Pearl</span><small>+10.000đ</small>
+                </label>
+                <label>
+                  <input type="checkbox" name="quick-topping" value="Fruit Jelly" data-price="8000">
+                  <span>Fruit Jelly</span><small>+8.000đ</small>
+                </label>
+                <label>
+                  <input type="checkbox" name="quick-topping" value="Pudding" data-price="12000">
+                  <span>Pudding</span><small>+12.000đ</small>
+                </label>
+              </div>
+
+              <div class="quick-total">
+                <span>Tổng cộng</span>
+                <strong id="quickTotal">45.000đ</strong>
+              </div>
+            </div>
+
+            <button class="button add-to-cart" id="addToCart" type="button">ADD TO CART</button>
+            <p class="cart-message" id="cartMessage" role="status" aria-live="polite"></p>
           </div>
         </div>
       </div>
@@ -250,5 +288,6 @@
     </div>
   </footer>
 
+  <script src="js/script.js"></script>
 </body>
 </html>
