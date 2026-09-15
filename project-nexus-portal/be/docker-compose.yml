@@ -1,0 +1,58 @@
+services:
+  # MySQL Database Container
+  mysql_db:
+    image: mysql:8.0
+    container_name: nexus_mysql_db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - nexus_mysql_data:/var/lib/mysql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot 3 Backend API Container
+  backend_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexus_backend_api
+    restart: on-failure
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DB_HOST: mysql_db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${SERVER_PORT}
+      CONTEXT_PATH: ${CONTEXT_PATH}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS}
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  nexus_mysql_data:
+    driver: local
