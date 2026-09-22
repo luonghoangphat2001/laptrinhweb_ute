@@ -1,13 +1,17 @@
 package com.nexus.portal.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
+@Schema(description = "User login credentials payload")
 public class LoginRequest {
 
     @NotBlank(message = "Username or Email must not be blank")
+    @Schema(description = "Registered username or email address", example = "admin")
     private String usernameOrEmail;
 
     @NotBlank(message = "Password must not be blank")
+    @Schema(description = "Account password", example = "Admin@123456")
     private String password;
 
     public LoginRequest() {

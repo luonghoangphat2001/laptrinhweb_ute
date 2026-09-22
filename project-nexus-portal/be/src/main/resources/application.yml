@@ -1,7 +1,7 @@
 server:
   port: ${SERVER_PORT:8086}
   servlet:
-    context-path: ${CONTEXT_PATH:/api/v1}
+    context-path: ${CONTEXT_PATH:}
 
 spring:
   application:
@@ -26,3 +26,19 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
     allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
+  api:
+    prefix: ${API_PREFIX}
+    version: ${API_VERSION}
+    base-url: ${API_BASE_URL}
+
+springdoc:
+  api-docs:
+    path: ${SWAGGER_DOCS_PATH}
+    enabled: true
+  swagger-ui:
+    path: ${SWAGGER_UI_PATH}
+    tags-sorter: alpha
+    operations-sorter: method
+    display-request-duration: true
+    doc-expansion: none
+
