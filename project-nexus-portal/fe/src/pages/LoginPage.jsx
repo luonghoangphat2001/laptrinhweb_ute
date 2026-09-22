@@ -156,7 +156,39 @@ export const LoginPage = () => {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-800 text-center">
+        {!isRegisterMode && (
+          <div className="mt-6 pt-5 border-t border-slate-800/80">
+            <p className="text-xs text-slate-400 font-medium mb-2.5 text-center">
+              Quick Demo Accounts:
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setUsernameOrEmail('superadmin');
+                  setPassword('password123');
+                }}
+                className="px-3 py-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-brand-500/50 rounded-xl text-left transition-all group cursor-pointer"
+              >
+                <div className="text-[11px] font-semibold text-brand-400 group-hover:text-brand-300">Admin</div>
+                <div className="text-xs text-slate-300 font-mono">superadmin</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setUsernameOrEmail('individual_user');
+                  setPassword('password123');
+                }}
+                className="px-3 py-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-emerald-500/50 rounded-xl text-left transition-all group cursor-pointer"
+              >
+                <div className="text-[11px] font-semibold text-emerald-400 group-hover:text-emerald-300">Individual</div>
+                <div className="text-xs text-slate-300 font-mono">individual_user</div>
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-5 text-center">
           <button
             type="button"
             onClick={() => {

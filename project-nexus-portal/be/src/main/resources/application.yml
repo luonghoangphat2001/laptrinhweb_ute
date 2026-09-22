@@ -16,9 +16,19 @@ spring:
       ddl-auto: ${HIBERNATE_DDL_AUTO:update}
     show-sql: ${SHOW_SQL:false}
     open-in-view: false
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:always}
+      continue-on-error: true
+      data-locations:
+        - classpath:data.sql
+        - classpath:data/01_roles.sql
+        - classpath:data/02_users.sql
+        - classpath:data/03_products.sql
 
 app:
   jwt:
