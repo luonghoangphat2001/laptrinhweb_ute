@@ -3,6 +3,8 @@ package com.nexus.portal.service.impl;
 import com.nexus.portal.dto.request.UserUpdateRequest;
 import com.nexus.portal.dto.response.UserResponse;
 import com.nexus.portal.enums.RoleName;
+import com.nexus.portal.model.Department;
+import com.nexus.portal.model.Faculty;
 import com.nexus.portal.model.Role;
 import com.nexus.portal.model.User;
 import com.nexus.portal.exception.BadRequestException;
@@ -15,8 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,6 +94,58 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         user.setActive(!user.isActive());
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponse> getScopedLecturers(String currentUserEmail) {
+        User currentUser = userRepository.findByEmail(currentUserEmail)
+                .orElseGet(() -> userRepository.findByUsername(currentUserEmail)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found with identifier: " + currentUserEmail)));
+
+        boolean isAdmin = currentUser.getRoles().stream().anyMatch(r -> r.getName() == RoleName.ROLE_ADMIN);
+        boolean isPrincipal = currentUser.getRoles().stream().anyMatch(r -> r.getName() == RoleName.ROLE_PRINCIPAL);
+        boolean isTeacher = currentUser.getRoles().stream().anyMatch(r -> r.getName() == RoleName.ROLE_TEACHER);
+
+        if (isAdmin) {
+            // Super Admin: can view all lecturers across faculties
+            return userRepository.findAllLecturers().stream().map(this::mapToUserResponse).collect(Collectors.toList());
+        }
+
+        if (isPrincipal) {
+            // Department / Faculty Head: only view lecturers within their own faculty or department
+            Set<Long> facultyIds = currentUser.getFaculties().stream().map(Faculty::getId).collect(Collectors.toSet());
+            Set<Long> deptIds = currentUser.getDepartments().stream().map(Department::getId).collect(Collectors.toSet());
+
+            if (facultyIds.isEmpty() && deptIds.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            if (!facultyIds.isEmpty() && !deptIds.isEmpty()) {
+                return userRepository.findLecturersByFacultiesOrDepartments(facultyIds, deptIds).stream()
+                        .map(this::mapToUserResponse)
+                        .collect(Collectors.toList());
+            } else if (!facultyIds.isEmpty()) {
+                return userRepository.findLecturersByFacultyIds(facultyIds).stream()
+                        .map(this::mapToUserResponse)
+                        .collect(Collectors.toList());
+            } else {
+                return userRepository.findLecturersByDepartmentIds(deptIds).stream()
+                        .map(this::mapToUserResponse)
+                        .collect(Collectors.toList());
+            }
+        }
+
+        if (isTeacher) {
+            // Lecturer: only view supervising lecturers (themselves and co-advisors on shared topics)
+            List<User> associated = userRepository.findAssociatedLecturers(currentUser.getId());
+            if (associated.isEmpty()) {
+                associated = Collections.singletonList(currentUser);
+            }
+            return associated.stream().map(this::mapToUserResponse).collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 
     private UserResponse mapToUserResponse(User user) {

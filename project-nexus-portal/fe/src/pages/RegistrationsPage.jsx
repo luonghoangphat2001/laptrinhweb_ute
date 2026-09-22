@@ -16,7 +16,7 @@ import { useAuth } from '../context/AuthContext';
 
 export const RegistrationsPage = () => {
   const { user, hasRole } = useAuth();
-  const isLecturerOrAdmin = hasRole('ROLE_ADMIN') || hasRole('ROLE_TEACHER');
+  const isLecturerOrAdmin = hasRole('ROLE_ADMIN') || hasRole('ROLE_TEACHER') || hasRole('ROLE_PRINCIPAL');
 
   const [activePeriods, setActivePeriods] = useState([]);
   const [teamRegistrations, setTeamRegistrations] = useState([]);
@@ -255,7 +255,33 @@ export const RegistrationsPage = () => {
                       </p>
                     )}
 
-                    <div className="text-xs text-slate-400 mt-1 font-mono">
+                    {/* Student Team Members List */}
+                    {reg.members && reg.members.length > 0 && (
+                      <div className="mt-2.5 pt-2 border-t border-slate-100">
+                        <span className="text-[11px] font-semibold text-slate-500 block mb-1">
+                          Sinh viên đăng ký ({reg.members.length}):
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {reg.members.map((m) => (
+                            <span
+                              key={m.memberRecordId || m.userId}
+                              className={`text-[11px] px-2 py-0.5 rounded-lg border font-medium flex items-center space-x-1 ${
+                                m.roleInTeam === 'LEADER'
+                                  ? 'bg-amber-50 text-amber-800 border-amber-200 font-semibold'
+                                  : 'bg-slate-50 text-slate-700 border-slate-200'
+                              }`}
+                            >
+                              <span>{m.fullName} ({m.studentCode || 'N/A'})</span>
+                              <span className="text-[9px] uppercase px-1 py-0.2 rounded bg-black/5 font-mono">
+                                {m.roleInTeam}
+                              </span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="text-xs text-slate-400 mt-2 font-mono">
                       Registered: {reg.registeredAt?.replace('T', ' ').substring(0, 16)}
                     </div>
                   </div>

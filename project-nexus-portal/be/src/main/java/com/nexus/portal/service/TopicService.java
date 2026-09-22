@@ -15,6 +15,8 @@ public interface TopicService {
     void deleteTopic(Long topicId, Long lecturerId);
     TopicResponse toggleRegistration(Long topicId, Long lecturerId);
     List<TopicResponse> getLecturerTopics(Long lecturerId);
+    List<TopicResponse> getTopicsByScope(String currentUserEmail);
+    List<TopicResponse> getTopicsByDepartment(Long departmentId, String currentUserEmail);
     TopicResponse getTopicById(Long topicId);
     Page<TopicResponse> searchTopics(String keyword, Long departmentId, Long majorId, Long lecturerId, TopicStatus status, Long periodId, Pageable pageable);
     TopicCompareResponse compareTopics(List<Long> topicIds);

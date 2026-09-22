@@ -23,6 +23,7 @@ public class TopicResponse {
     private List<TopicLecturerResponse> advisors;
     private List<MajorResponse> majors;
     private long registeredTeamsCount;
+    private TeamResponse assignedTeam;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -34,6 +35,17 @@ public class TopicResponse {
                          Integer maxStudents, String duration, TopicStatus status, Boolean isRegistrationOpen,
                          List<TopicLecturerResponse> advisors, List<MajorResponse> majors,
                          long registeredTeamsCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, title, description, objectives, requirements, department, periodId, periodName, type,
+                maxStudents, duration, status, isRegistrationOpen, advisors, majors, registeredTeamsCount,
+                null, createdAt, updatedAt);
+    }
+
+    public TopicResponse(Long id, String title, String description, String objectives, String requirements,
+                         DepartmentResponse department, Long periodId, String periodName, TopicType type,
+                         Integer maxStudents, String duration, TopicStatus status, Boolean isRegistrationOpen,
+                         List<TopicLecturerResponse> advisors, List<MajorResponse> majors,
+                         long registeredTeamsCount, TeamResponse assignedTeam,
+                         LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -50,6 +62,7 @@ public class TopicResponse {
         this.advisors = advisors;
         this.majors = majors;
         this.registeredTeamsCount = registeredTeamsCount;
+        this.assignedTeam = assignedTeam;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -75,6 +88,7 @@ public class TopicResponse {
         private List<TopicLecturerResponse> advisors;
         private List<MajorResponse> majors;
         private long registeredTeamsCount;
+        private TeamResponse assignedTeam;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
@@ -158,6 +172,11 @@ public class TopicResponse {
             return this;
         }
 
+        public Builder assignedTeam(TeamResponse assignedTeam) {
+            this.assignedTeam = assignedTeam;
+            return this;
+        }
+
         public Builder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
@@ -171,7 +190,7 @@ public class TopicResponse {
         public TopicResponse build() {
             return new TopicResponse(id, title, description, objectives, requirements, department,
                     periodId, periodName, type, maxStudents, duration, status, isRegistrationOpen,
-                    advisors, majors, registeredTeamsCount, createdAt, updatedAt);
+                    advisors, majors, registeredTeamsCount, assignedTeam, createdAt, updatedAt);
         }
     }
 
@@ -317,5 +336,13 @@ public class TopicResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public TeamResponse getAssignedTeam() {
+        return assignedTeam;
+    }
+
+    public void setAssignedTeam(TeamResponse assignedTeam) {
+        this.assignedTeam = assignedTeam;
     }
 }

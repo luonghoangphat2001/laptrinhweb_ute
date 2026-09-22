@@ -9,6 +9,7 @@ import com.nexus.portal.exception.ResourceNotFoundException;
 import com.nexus.portal.model.*;
 import com.nexus.portal.repository.*;
 import com.nexus.portal.service.TeamService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,12 @@ public class TeamServiceImpl implements TeamService {
     public TeamResponse createTeam(TeamCreateRequest request, Long leaderId) {
         User leader = userRepository.findById(leaderId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", leaderId));
+
+        boolean isStudent = leader.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ROLE_USER);
+        if (!isStudent) {
+            throw new AccessDeniedException("Chỉ sinh viên (Student) mới được phép tạo nhóm và làm trưởng nhóm.");
+        }
 
         RegistrationPeriod period = registrationPeriodRepository.findById(request.getPeriodId())
                 .orElseThrow(() -> new ResourceNotFoundException("RegistrationPeriod", "id", request.getPeriodId()));
@@ -153,6 +160,12 @@ public class TeamServiceImpl implements TeamService {
         User invitee = userRepository.findById(request.getInviteeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Invitee User", "id", request.getInviteeId()));
 
+        boolean isInviteeStudent = invitee.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ROLE_USER);
+        if (!isInviteeStudent) {
+            throw new BadRequestException("Chỉ sinh viên mới được phép gia nhập nhóm. Người dùng được mời không phải sinh viên.");
+        }
+
         // Check if invitee already belongs to a team in this period
         Optional<Team> inviteeExistingTeam = teamRepository.findByUserIdAndPeriodId(invitee.getId(), team.getPeriod().getId());
         if (inviteeExistingTeam.isPresent()) {
@@ -233,6 +246,12 @@ public class TeamServiceImpl implements TeamService {
 
         // Add user as MEMBER
         User user = invitation.getInvitee();
+        boolean isStudent = user.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ROLE_USER);
+        if (!isStudent) {
+            throw new AccessDeniedException("Chỉ sinh viên mới được phép gia nhập nhóm.");
+        }
+
         TeamMember member = TeamMember.builder()
                 .team(team)
                 .user(user)

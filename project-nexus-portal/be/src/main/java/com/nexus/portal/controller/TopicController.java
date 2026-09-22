@@ -94,12 +94,21 @@ public class TopicController {
     }
 
     @GetMapping("/my-topics")
-    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
-    @Operation(summary = "Get advisor topics", description = "Retrieve topics proposed or advised by the authenticated lecturer")
+    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN') or hasRole('PRINCIPAL')")
+    @Operation(summary = "Get advisor or scoped topics", description = "Retrieve topics proposed by lecturer, scoped to department for department head, or all for admin")
     public ResponseEntity<ApiResponse<List<TopicResponse>>> getMyTopics(Authentication authentication) {
-        User user = getCurrentUser(authentication);
-        List<TopicResponse> topics = topicService.getLecturerTopics(user.getId());
-        return ResponseEntity.ok(ApiResponse.success(topics, "Advisor topics retrieved"));
+        List<TopicResponse> topics = topicService.getTopicsByScope(authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success(topics, "Topics retrieved successfully"));
+    }
+
+    @GetMapping("/department/{departmentId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRINCIPAL')")
+    @Operation(summary = "Get department topics", description = "Retrieve topics within a specific department (enforces department scope for department heads)")
+    public ResponseEntity<ApiResponse<List<TopicResponse>>> getDepartmentTopics(
+            @Parameter(description = "Department ID", required = true) @PathVariable Long departmentId,
+            Authentication authentication) {
+        List<TopicResponse> topics = topicService.getTopicsByDepartment(departmentId, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success(topics, "Department topics retrieved successfully"));
     }
 
     @PostMapping

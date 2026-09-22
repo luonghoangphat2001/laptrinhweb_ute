@@ -3,6 +3,7 @@ package com.nexus.portal.dto.response;
 import com.nexus.portal.enums.RegistrationStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class TopicRegistrationResponse {
     private Long id;
@@ -17,6 +18,7 @@ public class TopicRegistrationResponse {
     private LocalDateTime reviewedAt;
     private Long reviewedById;
     private String reviewedByName;
+    private List<TeamMemberResponse> members;
 
     public TopicRegistrationResponse() {
     }
@@ -25,6 +27,13 @@ public class TopicRegistrationResponse {
                                    String teamName, String message, RegistrationStatus status,
                                    String feedback, LocalDateTime registeredAt, LocalDateTime reviewedAt,
                                    Long reviewedById, String reviewedByName) {
+        this(id, topicId, topicTitle, teamId, teamName, message, status, feedback, registeredAt, reviewedAt, reviewedById, reviewedByName, null);
+    }
+
+    public TopicRegistrationResponse(Long id, Long topicId, String topicTitle, Long teamId,
+                                   String teamName, String message, RegistrationStatus status,
+                                   String feedback, LocalDateTime registeredAt, LocalDateTime reviewedAt,
+                                   Long reviewedById, String reviewedByName, List<TeamMemberResponse> members) {
         this.id = id;
         this.topicId = topicId;
         this.topicTitle = topicTitle;
@@ -37,6 +46,7 @@ public class TopicRegistrationResponse {
         this.reviewedAt = reviewedAt;
         this.reviewedById = reviewedById;
         this.reviewedByName = reviewedByName;
+        this.members = members;
     }
 
     public Long getId() {
@@ -133,5 +143,13 @@ public class TopicRegistrationResponse {
 
     public void setReviewedByName(String reviewedByName) {
         this.reviewedByName = reviewedByName;
+    }
+
+    public List<TeamMemberResponse> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<TeamMemberResponse> members) {
+        this.members = members;
     }
 }

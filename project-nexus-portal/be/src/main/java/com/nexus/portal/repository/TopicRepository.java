@@ -20,6 +20,10 @@ public interface TopicRepository extends JpaRepository<Topic, Long>, JpaSpecific
            "WHERE tl.lecturer.id = :lecturerId")
     List<Topic> findByLecturerId(@Param("lecturerId") Long lecturerId);
 
+    List<Topic> findByDepartmentId(Long departmentId);
+
+    List<Topic> findByDepartmentIdIn(java.util.Collection<Long> departmentIds);
+
     @Query("SELECT DISTINCT t FROM Topic t " +
            "LEFT JOIN t.majors m " +
            "LEFT JOIN t.topicLecturers tl " +

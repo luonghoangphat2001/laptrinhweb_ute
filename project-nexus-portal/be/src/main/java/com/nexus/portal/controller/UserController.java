@@ -14,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -25,6 +28,15 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/lecturers")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRINCIPAL') or hasRole('TEACHER')")
+    @Operation(summary = "Get scoped lecturers / teaching staff", 
+               description = "Retrieve lecturers based on role: Super Admin sees all; Department/Faculty Head sees within their faculty/department; Teacher sees only assigned supervising lecturers.")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getScopedLecturers(Authentication authentication) {
+        List<UserResponse> lecturers = userService.getScopedLecturers(authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success(lecturers, "Scoped lecturers retrieved successfully"));
     }
 
     @GetMapping

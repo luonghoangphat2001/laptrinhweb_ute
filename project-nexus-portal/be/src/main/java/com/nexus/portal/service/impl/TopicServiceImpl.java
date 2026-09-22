@@ -3,6 +3,8 @@ package com.nexus.portal.service.impl;
 import com.nexus.portal.dto.request.TopicCreateRequest;
 import com.nexus.portal.dto.response.*;
 import com.nexus.portal.enums.AdvisorRole;
+import com.nexus.portal.enums.RegistrationStatus;
+import com.nexus.portal.enums.RoleName;
 import com.nexus.portal.enums.TopicStatus;
 import com.nexus.portal.exception.BadRequestException;
 import com.nexus.portal.exception.ResourceNotFoundException;
@@ -11,6 +13,7 @@ import com.nexus.portal.repository.*;
 import com.nexus.portal.service.TopicService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,7 @@ public class TopicServiceImpl implements TopicService {
     private final RegistrationPeriodRepository registrationPeriodRepository;
     private final UserRepository userRepository;
     private final TopicRegistrationRepository topicRegistrationRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     public TopicServiceImpl(TopicRepository topicRepository,
                             TopicLecturerRepository topicLecturerRepository,
@@ -34,7 +38,8 @@ public class TopicServiceImpl implements TopicService {
                             MajorRepository majorRepository,
                             RegistrationPeriodRepository registrationPeriodRepository,
                             UserRepository userRepository,
-                            TopicRegistrationRepository topicRegistrationRepository) {
+                            TopicRegistrationRepository topicRegistrationRepository,
+                            TeamMemberRepository teamMemberRepository) {
         this.topicRepository = topicRepository;
         this.topicLecturerRepository = topicLecturerRepository;
         this.departmentRepository = departmentRepository;
@@ -42,6 +47,7 @@ public class TopicServiceImpl implements TopicService {
         this.registrationPeriodRepository = registrationPeriodRepository;
         this.userRepository = userRepository;
         this.topicRegistrationRepository = topicRegistrationRepository;
+        this.teamMemberRepository = teamMemberRepository;
     }
 
     @Override
@@ -197,6 +203,69 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<TopicResponse> getTopicsByScope(String currentUserEmail) {
+        User currentUser = userRepository.findByEmail(currentUserEmail)
+                .orElseGet(() -> userRepository.findByUsername(currentUserEmail)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found: " + currentUserEmail)));
+
+        boolean isAdmin = currentUser.getRoles().stream().anyMatch(r -> r.getName() == RoleName.ROLE_ADMIN);
+        boolean isPrincipal = currentUser.getRoles().stream().anyMatch(r -> r.getName() == RoleName.ROLE_PRINCIPAL);
+
+        if (isAdmin) {
+            return topicRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
+        }
+
+        if (isPrincipal) {
+            Set<Long> deptIds = currentUser.getDepartments().stream()
+                    .map(Department::getId)
+                    .collect(Collectors.toSet());
+            if (deptIds.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return topicRepository.findByDepartmentIdIn(deptIds).stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+        }
+
+        // Default to teacher/advisor assigned topics
+        return topicRepository.findByLecturerId(currentUser.getId()).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TopicResponse> getTopicsByDepartment(Long departmentId, String currentUserEmail) {
+        User currentUser = userRepository.findByEmail(currentUserEmail)
+                .orElseGet(() -> userRepository.findByUsername(currentUserEmail)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found: " + currentUserEmail)));
+
+        boolean isAdmin = currentUser.getRoles().stream().anyMatch(r -> r.getName() == RoleName.ROLE_ADMIN);
+        boolean isPrincipal = currentUser.getRoles().stream().anyMatch(r -> r.getName() == RoleName.ROLE_PRINCIPAL);
+
+        if (isAdmin) {
+            return topicRepository.findByDepartmentId(departmentId).stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+        }
+
+        if (isPrincipal) {
+            boolean inDepartment = currentUser.getDepartments().stream()
+                    .anyMatch(d -> d.getId().equals(departmentId));
+            if (!inDepartment) {
+                throw new AccessDeniedException(
+                        "Trưởng bộ môn chỉ có quyền xem trong phạm vi bộ môn của mình (Bộ môn ID " + departmentId + " không thuộc quyền quản lý)");
+            }
+            return topicRepository.findByDepartmentId(departmentId).stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+        }
+
+        throw new AccessDeniedException("Bạn không có quyền truy cập đề tài theo bộ môn");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public TopicResponse getTopicById(Long topicId) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException("Topic", "id", topicId));
@@ -251,6 +320,42 @@ public class TopicServiceImpl implements TopicService {
 
         long registrationsCount = topicRegistrationRepository.findByTopicId(topic.getId()).size();
 
+        // Check for approved registration to populate assignedTeam and all student members
+        Optional<TopicRegistration> approvedReg = topicRegistrationRepository.findByTopicId(topic.getId()).stream()
+                .filter(r -> r.getStatus() == RegistrationStatus.APPROVED)
+                .findFirst();
+
+        TeamResponse assignedTeamResp = null;
+        if (approvedReg.isPresent()) {
+            Team team = approvedReg.get().getTeam();
+            List<TeamMemberResponse> members = teamMemberRepository.findByTeamId(team.getId()).stream()
+                    .map(tm -> new TeamMemberResponse(
+                            tm.getId(),
+                            tm.getUser().getId(),
+                            tm.getUser().getUsername(),
+                            tm.getUser().getFullName(),
+                            tm.getUser().getStudentCode(),
+                            tm.getUser().getAvatarUrl(),
+                            tm.getUser().getEmail(),
+                            tm.getUser().getPhone(),
+                            tm.getRoleInTeam(),
+                            tm.getJoinedAt()
+                    ))
+                    .collect(Collectors.toList());
+
+            assignedTeamResp = TeamResponse.builder()
+                    .id(team.getId())
+                    .name(team.getName())
+                    .leaderId(team.getLeader() != null ? team.getLeader().getId() : null)
+                    .leaderName(team.getLeader() != null ? team.getLeader().getFullName() : null)
+                    .periodId(team.getPeriod() != null ? team.getPeriod().getId() : null)
+                    .periodName(team.getPeriod() != null ? team.getPeriod().getName() : null)
+                    .status(team.getStatus())
+                    .members(members)
+                    .createdAt(team.getCreatedAt())
+                    .build();
+        }
+
         return TopicResponse.builder()
                 .id(topic.getId())
                 .title(topic.getTitle())
@@ -268,6 +373,7 @@ public class TopicServiceImpl implements TopicService {
                 .advisors(advisorResponses)
                 .majors(majorResponses)
                 .registeredTeamsCount(registrationsCount)
+                .assignedTeam(assignedTeamResp)
                 .createdAt(topic.getCreatedAt())
                 .updatedAt(topic.getUpdatedAt())
                 .build();

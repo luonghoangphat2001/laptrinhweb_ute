@@ -15,4 +15,5 @@ public interface UserService {
     void deleteUser(Long id);
 
     void toggleUserStatus(Long id);
+    java.util.List<UserResponse> getScopedLecturers(String currentUserEmail);
 }

@@ -8,6 +8,7 @@ import com.nexus.portal.exception.ResourceNotFoundException;
 import com.nexus.portal.model.*;
 import com.nexus.portal.repository.*;
 import com.nexus.portal.service.TopicRegistrationService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,12 @@ public class TopicRegistrationServiceImpl implements TopicRegistrationService {
         User currentUser = userRepository.findByEmail(currentUserEmail)
                 .orElseGet(() -> userRepository.findByUsername(currentUserEmail)
                         .orElseThrow(() -> new ResourceNotFoundException("User not found with identifier: " + currentUserEmail)));
+
+        boolean isStudent = currentUser.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ROLE_USER);
+        if (!isStudent) {
+            throw new AccessDeniedException("Chỉ sinh viên (Student) mới có quyền đăng ký đề tài.");
+        }
 
         TeamMember leaderMember = teamMemberRepository.findByUserIdAndRoleInTeam(currentUser.getId(), TeamRole.LEADER)
                 .orElseThrow(() -> new IllegalArgumentException("Only team leaders can register for a topic"));
@@ -112,9 +119,17 @@ public class TopicRegistrationServiceImpl implements TopicRegistrationService {
                 .anyMatch(tl -> tl.getLecturer().getId().equals(reviewer.getId()));
         boolean isAdmin = reviewer.getRoles().stream()
                 .anyMatch(r -> r.getName() == RoleName.ROLE_ADMIN);
+        boolean isPrincipal = reviewer.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ROLE_PRINCIPAL);
 
-        if (!isAdvisor && !isAdmin) {
-            throw new IllegalArgumentException("Only the topic advisor or an administrator can review registrations");
+        if (isPrincipal) {
+            boolean inDepartment = reviewer.getDepartments().stream()
+                    .anyMatch(d -> d.getId().equals(topic.getDepartment().getId()));
+            if (!inDepartment) {
+                throw new AccessDeniedException("Trưởng bộ môn chỉ có quyền duyệt đề tài trong phạm vi bộ môn của mình");
+            }
+        } else if (!isAdmin && !isAdvisor) {
+            throw new AccessDeniedException("Chỉ giảng viên hướng dẫn của đề tài, trưởng bộ môn phụ trách, hoặc quản trị viên mới có quyền duyệt đăng ký");
         }
 
         if (request.getStatus() != RegistrationStatus.APPROVED && request.getStatus() != RegistrationStatus.REJECTED) {
@@ -159,6 +174,32 @@ public class TopicRegistrationServiceImpl implements TopicRegistrationService {
     @Override
     @Transactional(readOnly = true)
     public List<TopicRegistrationResponse> getTopicRegistrations(Long topicId, String currentUserEmail) {
+        User currentUser = userRepository.findByEmail(currentUserEmail)
+                .orElseGet(() -> userRepository.findByUsername(currentUserEmail)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found with identifier: " + currentUserEmail)));
+
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Topic not found with id: " + topicId));
+
+        boolean isAdmin = currentUser.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ROLE_ADMIN);
+        boolean isPrincipal = currentUser.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ROLE_PRINCIPAL);
+        boolean isAdvisor = topic.getTopicLecturers().stream()
+                .anyMatch(tl -> tl.getLecturer().getId().equals(currentUser.getId()));
+
+        if (isAdmin) {
+            // Admin can view all
+        } else if (isPrincipal) {
+            boolean inDepartment = currentUser.getDepartments().stream()
+                    .anyMatch(d -> d.getId().equals(topic.getDepartment().getId()));
+            if (!inDepartment) {
+                throw new AccessDeniedException("Trưởng bộ môn chỉ có quyền xem các đề tài và danh sách sinh viên đăng ký trong phạm vi bộ môn của mình.");
+            }
+        } else if (!isAdvisor) {
+            throw new AccessDeniedException("Bạn không có quyền xem danh sách sinh viên đăng ký của đề tài này.");
+        }
+
         return topicRegistrationRepository.findByTopicId(topicId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -203,7 +244,22 @@ public class TopicRegistrationServiceImpl implements TopicRegistrationService {
     }
 
     private TopicRegistrationResponse mapToResponse(TopicRegistration reg) {
-        return new TopicRegistrationResponse(
+        List<com.nexus.portal.dto.response.TeamMemberResponse> members = teamMemberRepository.findByTeamId(reg.getTeam().getId()).stream()
+                .map(tm -> new com.nexus.portal.dto.response.TeamMemberResponse(
+                        tm.getId(),
+                        tm.getUser().getId(),
+                        tm.getUser().getUsername(),
+                        tm.getUser().getFullName(),
+                        tm.getUser().getStudentCode(),
+                        tm.getUser().getAvatarUrl(),
+                        tm.getUser().getEmail(),
+                        tm.getUser().getPhone(),
+                        tm.getRoleInTeam(),
+                        tm.getJoinedAt()
+                ))
+                .collect(Collectors.toList());
+
+        TopicRegistrationResponse resp = new TopicRegistrationResponse(
                 reg.getId(),
                 reg.getTopic().getId(),
                 reg.getTopic().getTitle(),
@@ -217,5 +273,7 @@ public class TopicRegistrationServiceImpl implements TopicRegistrationService {
                 reg.getReviewedBy() != null ? reg.getReviewedBy().getId() : null,
                 reg.getReviewedBy() != null ? reg.getReviewedBy().getFullName() : null
         );
+        resp.setMembers(members);
+        return resp;
     }
 }

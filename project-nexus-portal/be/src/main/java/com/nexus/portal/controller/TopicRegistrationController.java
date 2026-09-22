@@ -29,7 +29,8 @@ public class TopicRegistrationController {
     }
 
     @PostMapping
-    @Operation(summary = "Submit topic registration", description = "Team leader registers the team for a graduation topic during an open registration period")
+    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "Submit topic registration", description = "Team leader registers the team for a graduation topic during an open registration period (Students only)")
     public ResponseEntity<ApiResponse<TopicRegistrationResponse>> registerTopic(
             @Valid @RequestBody TopicRegistrationRequest request,
             Authentication authentication) {
@@ -46,8 +47,8 @@ public class TopicRegistrationController {
     }
 
     @GetMapping("/topic/{topicId}")
-    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
-    @Operation(summary = "Get registrations for topic", description = "Retrieve all student team registrations for a specific topic (Advisor/Admin only)")
+    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN') or hasRole('PRINCIPAL')")
+    @Operation(summary = "Get registrations for topic", description = "Retrieve all student team registrations for a specific topic (Advisor/Admin/Principal only)")
     public ResponseEntity<ApiResponse<List<TopicRegistrationResponse>>> getTopicRegistrations(
             @Parameter(description = "Topic ID", required = true) @PathVariable Long topicId,
             Authentication authentication) {
@@ -56,8 +57,8 @@ public class TopicRegistrationController {
     }
 
     @PutMapping("/{id}/review")
-    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
-    @Operation(summary = "Review topic registration", description = "Advisor or admin approves or rejects a team registration. Approving locks the team roster.")
+    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN') or hasRole('PRINCIPAL')")
+    @Operation(summary = "Review topic registration", description = "Advisor, admin, or department head approves or rejects a team registration. Approving locks the team roster.")
     public ResponseEntity<ApiResponse<TopicRegistrationResponse>> reviewRegistration(
             @Parameter(description = "Registration ID", required = true) @PathVariable Long id,
             @Valid @RequestBody TopicReviewRequest request,

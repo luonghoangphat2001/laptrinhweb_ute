@@ -16,14 +16,33 @@ import { useAuth } from '../../context/AuthContext';
 export const Sidebar = ({ isOpen }) => {
   const { user, hasRole } = useAuth();
 
+  const isStudent = hasRole('ROLE_USER');
+  const isAdmin = hasRole('ROLE_ADMIN');
+  const isPrincipal = hasRole('ROLE_PRINCIPAL');
+  const isTeacher = hasRole('ROLE_TEACHER');
+
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Thesis Topics', path: '/topics', icon: FileText },
-    { name: 'My Team', path: '/teams', icon: Users2 },
+    ...(isStudent
+      ? [
+          { name: 'My Team', path: '/teams', icon: Users2 },
+          { name: 'Matchmaking Board', path: '/matchmaking', icon: Compass },
+        ]
+      : []),
     { name: 'Topic Registrations', path: '/registrations', icon: BookmarkCheck },
-    { name: 'Matchmaking Board', path: '/matchmaking', icon: Compass },
-    { name: 'User Management', path: '/users', icon: Users, adminOnly: true },
-    { name: 'Roles & Access', path: '/roles', icon: ShieldCheck, adminOnly: true },
+    ...(isAdmin || isPrincipal || isTeacher
+      ? [
+          {
+            name: isAdmin ? 'User Management' : 'Teaching Staff',
+            path: '/users',
+            icon: Users,
+          },
+        ]
+      : []),
+    ...(isAdmin
+      ? [{ name: 'Roles & Access', path: '/roles', icon: ShieldCheck }]
+      : []),
   ];
 
   return (

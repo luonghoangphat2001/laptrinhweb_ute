@@ -40,11 +40,11 @@ export const App = () => {
             <Route path="registrations" element={<RegistrationsPage />} />
             <Route path="matchmaking" element={<MatchmakingPage />} />
 
-            {/* Admin Management */}
+            {/* Admin & Faculty Staff Management */}
             <Route
               path="users"
               element={
-                <RoleBasedRoute requiredRole="ROLE_ADMIN">
+                <RoleBasedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_PRINCIPAL', 'ROLE_TEACHER']}>
                   <UsersPage />
                 </RoleBasedRoute>
               }
