@@ -7,11 +7,11 @@ import jakarta.validation.constraints.NotBlank;
 public class LoginRequest {
 
     @NotBlank(message = "Username or Email must not be blank")
-    @Schema(description = "Registered username or email address", example = "admin")
+    @Schema(description = "Registered username or email address", example = "superadmin")
     private String usernameOrEmail;
 
     @NotBlank(message = "Password must not be blank")
-    @Schema(description = "Account password", example = "Admin@123456")
+    @Schema(description = "Account password", example = "password123")
     private String password;
 
     public LoginRequest() {

@@ -12,21 +12,21 @@ public class RegisterRequest {
 
     @NotBlank(message = "Username must not be blank")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
-    @Schema(description = "Unique username", example = "johndoe", minLength = 3, maxLength = 50)
+    @Schema(description = "Unique username", example = "individual_user", minLength = 3, maxLength = 50)
     private String username;
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Email must be valid")
-    @Schema(description = "Unique email address", example = "john.doe@example.com")
+    @Schema(description = "Unique email address", example = "individual@nexus.local")
     private String email;
 
     @NotBlank(message = "Password must not be blank")
     @Size(min = 6, max = 100, message = "Password must be at least 6 characters")
-    @Schema(description = "Password with minimum 6 characters", example = "SecurePass123!")
+    @Schema(description = "Password with minimum 6 characters", example = "password123")
     private String password;
 
     @NotBlank(message = "Full name must not be blank")
-    @Schema(description = "Full name of the user", example = "John Doe")
+    @Schema(description = "Full name of the user", example = "Individual User")
     private String fullName;
 
     @Schema(description = "Set of roles to assign (optional)", example = "[\"ROLE_USER\"]")

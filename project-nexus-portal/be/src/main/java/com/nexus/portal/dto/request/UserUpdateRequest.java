@@ -10,21 +10,21 @@ import java.util.Set;
 public class UserUpdateRequest {
 
     @NotBlank(message = "Full name must not be blank")
-    @Schema(description = "Updated full name", example = "Jane Doe")
+    @Schema(description = "Updated full name", example = "Individual User Updated")
     private String fullName;
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Email must be valid")
-    @Schema(description = "Updated email address", example = "jane.doe@example.com")
+    @Schema(description = "Updated email address", example = "individual_updated@nexus.local")
     private String email;
 
-    @Schema(description = "Avatar image URL", example = "https://images.unsplash.com/photo-1494790108377-be9c29b29330")
+    @Schema(description = "Avatar image URL", example = "https://ui-avatars.com/api/?name=Individual+User&background=10b981&color=fff")
     private String avatarUrl;
 
     @Schema(description = "Account active state", example = "true")
     private Boolean active;
 
-    @Schema(description = "Assigned roles for the user", example = "[\"ROLE_USER\", \"ROLE_MANAGER\"]")
+    @Schema(description = "Assigned roles for the user", example = "[\"ROLE_USER\"]")
     private Set<String> roles;
 
     public UserUpdateRequest() {

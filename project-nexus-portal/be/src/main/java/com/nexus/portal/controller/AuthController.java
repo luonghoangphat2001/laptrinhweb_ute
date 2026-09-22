@@ -7,6 +7,9 @@ import com.nexus.portal.dto.response.AuthResponse;
 import com.nexus.portal.dto.response.UserResponse;
 import com.nexus.portal.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,16 +30,57 @@ public class AuthController {
 
     @PostMapping("/login")
     @SecurityRequirements
-    @Operation(summary = "User login", description = "Authenticate using username/email and password to receive a JWT access token.")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
+    @Operation(
+            summary = "User login",
+            description = "Authenticate using username/email and password to receive a JWT access token. Select an example from the dropdown to test with seed credentials."
+    )
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Login credentials payload",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = LoginRequest.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Admin Account",
+                                            summary = "Super Administrator (superadmin)",
+                                            value = "{\"usernameOrEmail\": \"superadmin\", \"password\": \"password123\"}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Individual User Account",
+                                            summary = "Individual User (individual_user)",
+                                            value = "{\"usernameOrEmail\": \"individual_user\", \"password\": \"password123\"}"
+                                    )
+                            }
+                    )
+            )
+            @Valid @RequestBody LoginRequest loginRequest) {
         AuthResponse response = authService.login(loginRequest);
         return ResponseEntity.ok(ApiResponse.success(response, "Login successfully"));
     }
 
     @PostMapping("/register")
     @SecurityRequirements
-    @Operation(summary = "User registration", description = "Register a new user account with credentials and profile information.")
-    public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest registerRequest) {
+    @Operation(
+            summary = "User registration",
+            description = "Register a new user account with credentials and profile information."
+    )
+    public ResponseEntity<ApiResponse<UserResponse>> register(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "User registration payload",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = RegisterRequest.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Standard User Registration",
+                                            summary = "New individual user account",
+                                            value = "{\"username\": \"new_student\", \"email\": \"student@nexus.local\", \"password\": \"password123\", \"fullName\": \"Nguyen Van B\", \"roles\": [\"ROLE_USER\"]}"
+                                    )
+                            }
+                    )
+            )
+            @Valid @RequestBody RegisterRequest registerRequest) {
         UserResponse response = authService.register(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.created(response, "User registered successfully"));
