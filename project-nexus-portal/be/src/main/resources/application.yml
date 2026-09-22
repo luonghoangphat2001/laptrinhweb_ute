@@ -1,20 +1,20 @@
 server:
-  port: ${SERVER_PORT:8086}
+  port: ${SERVER_PORT}
   servlet:
-    context-path: ${CONTEXT_PATH:}
+    context-path: ${CONTEXT_PATH}
 
 spring:
   application:
     name: nexus-portal-backend
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:nexus_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: ${DB_USER:root}
-    password: ${DB_PASSWORD:root}
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
-    show-sql: ${SHOW_SQL:false}
+      ddl-auto: ${HIBERNATE_DDL_AUTO}
+    show-sql: ${SHOW_SQL}
     open-in-view: false
     defer-datasource-initialization: true
     properties:
@@ -22,7 +22,7 @@ spring:
         format_sql: true
   sql:
     init:
-      mode: ${SQL_INIT_MODE:always}
+      mode: ${SQL_INIT_MODE}
       continue-on-error: true
       data-locations:
         - classpath:data.sql
@@ -32,10 +32,10 @@ spring:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:9a6747f6f64535e3b5acf29c3645e4612482e16136f019f945e7a3ce8b46445b}
-    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    secret: ${JWT_SECRET}
+    expiration-ms: ${JWT_EXPIRATION_MS}
   cors:
-    allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
+    allowed-origin: ${CORS_ALLOWED_ORIGIN}
   api:
     prefix: ${API_PREFIX}
     version: ${API_VERSION}

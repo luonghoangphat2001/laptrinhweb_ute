@@ -30,13 +30,22 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+        // Strip apiPrefix from apiBaseUrl if present to avoid duplicate prefixes (/api/v1/api/v1/...)
+        String serverUrl = (apiBaseUrl != null && !apiBaseUrl.isBlank()) ? apiBaseUrl : "/";
+        if (apiPrefix != null && !apiPrefix.isBlank() && serverUrl.endsWith(apiPrefix)) {
+            serverUrl = serverUrl.substring(0, serverUrl.length() - apiPrefix.length());
+        }
+        if (serverUrl.endsWith("/") && serverUrl.length() > 1) {
+            serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+        }
+
         Server primaryServer = new Server()
-                .url(apiBaseUrl)
-                .description("Environment Configured Base URL");
+                .url(serverUrl.isEmpty() ? "/" : serverUrl)
+                .description("Default Server");
 
         Server relativeServer = new Server()
-                .url(apiPrefix)
-                .description("Relative Context API Server");
+                .url("/")
+                .description("Relative Server");
 
         return new OpenAPI()
                 .info(new Info()

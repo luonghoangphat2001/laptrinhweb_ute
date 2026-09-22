@@ -53,22 +53,22 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Group 1: Public Auth & Public Module APIs (wildcard ** covers all endpoints in the group)
                         .requestMatchers(
-                                "/auth/login",
-                                "/auth/register",
-                                "/api/v1/auth/login",
-                                "/api/v1/auth/register",
-                                "/api/v1/auth/**",
-                                "/api/v1/public/**",
+                                "/api/auth/**",
+                                "/api/public/**"
+                        ).permitAll()
+                        // Group 2: Swagger & OpenAPI Documentation APIs
+                        .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/v3/api-docs",
-                                "/swagger/**",
-                                "/swagger/index.html",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
+                                "/swagger/**",
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
+                        // All other APIs require JWT authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
