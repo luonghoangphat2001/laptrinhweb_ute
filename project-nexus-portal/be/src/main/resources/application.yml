@@ -27,8 +27,10 @@ spring:
       data-locations:
         - classpath:data.sql
         - classpath:data/01_roles.sql
-        - classpath:data/02_users.sql
-        - classpath:data/03_products.sql
+        - classpath:data/02_academic_data.sql
+        - classpath:data/03_users.sql
+        - classpath:data/04_periods_topics.sql
+        - classpath:data/05_teams_matchmaking.sql
 
 app:
   jwt:

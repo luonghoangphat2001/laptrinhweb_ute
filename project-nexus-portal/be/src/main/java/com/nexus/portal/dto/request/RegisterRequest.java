@@ -1,10 +1,10 @@
 package com.nexus.portal.dto.request;
 
+import com.nexus.portal.enums.RoleName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import com.nexus.portal.model.RoleName;
 
 import java.util.Set;
 
@@ -13,24 +13,24 @@ public class RegisterRequest {
 
     @NotBlank(message = "Username must not be blank")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
-    @Schema(description = "Unique username", example = "individual_user", minLength = 3, maxLength = 50)
+    @Schema(description = "Unique username", example = "individual_user", minLength = 3, maxLength = 50, requiredMode = Schema.RequiredMode.REQUIRED)
     private String username;
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Email must be valid")
-    @Schema(description = "Unique email address", example = "individual@nexus.local")
+    @Schema(description = "Unique email address", example = "individual@nexus.local", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
 
     @NotBlank(message = "Password must not be blank")
     @Size(min = 6, max = 100, message = "Password must be at least 6 characters")
-    @Schema(description = "Password with minimum 6 characters", example = "password123")
+    @Schema(description = "Password with minimum 6 characters", example = "password123", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 
     @NotBlank(message = "Full name must not be blank")
-    @Schema(description = "Full name of the user", example = "Individual User")
+    @Schema(description = "Full name of the user", example = "Individual User", requiredMode = Schema.RequiredMode.REQUIRED)
     private String fullName;
 
-    @Schema(description = "Set of roles to assign (optional)", example = "[\"ROLE_USER\"]")
+    @Schema(description = "Set of roles to assign (optional)", example = "[\"ROLE_USER\"]", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Set<RoleName> roles;
 
     public RegisterRequest() {

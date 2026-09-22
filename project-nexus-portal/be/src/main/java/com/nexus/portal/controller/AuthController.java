@@ -36,6 +36,7 @@ public class AuthController {
     )
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
                     description = "Login credentials payload",
                     content = @Content(
                             mediaType = "application/json",
@@ -62,6 +63,7 @@ public class AuthController {
     )
     public ResponseEntity<ApiResponse<UserResponse>> register(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
                     description = "User registration payload",
                     content = @Content(
                             mediaType = "application/json",

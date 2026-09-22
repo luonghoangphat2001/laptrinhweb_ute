@@ -1,9 +1,13 @@
 package com.nexus.portal.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nexus.portal.exception.ErrorResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -24,13 +31,16 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final ObjectMapper objectMapper;
 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService,
                           JwtAuthenticationFilter jwtAuthenticationFilter,
-                          CorsConfigurationSource corsConfigurationSource) {
+                          CorsConfigurationSource corsConfigurationSource,
+                          ObjectMapper objectMapper) {
         this.customUserDetailsService = customUserDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.corsConfigurationSource = corsConfigurationSource;
+        this.objectMapper = objectMapper;
     }
 
     @Bean
@@ -52,11 +62,44 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            ErrorResponse error = ErrorResponse.builder()
+                                    .success(false)
+                                    .status(HttpStatus.UNAUTHORIZED.value())
+                                    .error("Unauthorized")
+                                    .message("Yêu cầu xác thực: Bạn chưa đăng nhập hoặc Token JWT không hợp lệ/hết hạn. Vui lòng gửi kèm 'Authorization: Bearer <token>' hợp lệ.")
+                                    .path(request.getRequestURI())
+                                    .timestamp(LocalDateTime.now())
+                                    .build();
+                            objectMapper.writeValue(response.getOutputStream(), error);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            ErrorResponse error = ErrorResponse.builder()
+                                    .success(false)
+                                    .status(HttpStatus.FORBIDDEN.value())
+                                    .error("Forbidden")
+                                    .message("Truy cập bị từ chối (403 Forbidden): Tài khoản của bạn không có đủ quyền hạn (Role) để thực hiện thao tác trên tài nguyên này.")
+                                    .path(request.getRequestURI())
+                                    .timestamp(LocalDateTime.now())
+                                    .build();
+                            objectMapper.writeValue(response.getOutputStream(), error);
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth
                         // Group 1: Public Auth & Public Module APIs (wildcard ** covers all endpoints in the group)
                         .requestMatchers(
+                                "/auth/**",
                                 "/api/auth/**",
-                                "/api/public/**"
+                                "/api/public/**",
+                                "/academic/**",
+                                "/api/academic/**"
                         ).permitAll()
                         // Group 2: Swagger & OpenAPI Documentation APIs
                         .requestMatchers(

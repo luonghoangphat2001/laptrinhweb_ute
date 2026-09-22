@@ -1,6 +1,6 @@
 package com.nexus.portal.dto.request;
 
-import com.nexus.portal.model.RoleName;
+import com.nexus.portal.enums.RoleName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,21 +11,21 @@ import java.util.Set;
 public class UserUpdateRequest {
 
     @NotBlank(message = "Full name must not be blank")
-    @Schema(description = "Updated full name", example = "Individual User Updated")
+    @Schema(description = "Updated full name", example = "Individual User Updated", requiredMode = Schema.RequiredMode.REQUIRED)
     private String fullName;
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Email must be valid")
-    @Schema(description = "Updated email address", example = "individual_updated@nexus.local")
+    @Schema(description = "Updated email address", example = "individual_updated@nexus.local", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
 
-    @Schema(description = "Avatar image URL", example = "https://ui-avatars.com/api/?name=Individual+User&background=10b981&color=fff")
+    @Schema(description = "Avatar image URL", example = "https://ui-avatars.com/api/?name=Individual+User&background=10b981&color=fff", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String avatarUrl;
 
-    @Schema(description = "Account active state", example = "true")
+    @Schema(description = "Account active state", example = "true", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Boolean active;
 
-    @Schema(description = "Assigned roles for the user", example = "[\"ROLE_USER\"]")
+    @Schema(description = "Assigned roles for the user", example = "[\"ROLE_USER\"]", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Set<RoleName> roles;
 
     public UserUpdateRequest() {

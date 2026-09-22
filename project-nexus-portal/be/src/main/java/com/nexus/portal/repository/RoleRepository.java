@@ -1,7 +1,7 @@
 package com.nexus.portal.repository;
 
 import com.nexus.portal.model.Role;
-import com.nexus.portal.model.RoleName;
+import com.nexus.portal.enums.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

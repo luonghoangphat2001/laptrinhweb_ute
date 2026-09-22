@@ -1,4 +1,4 @@
-package com.nexus.portal.model;
+package com.nexus.portal.enums;
 
 public enum RoleName {
     ROLE_ADMIN,

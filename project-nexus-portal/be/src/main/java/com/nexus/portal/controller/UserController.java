@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID", description = "Retrieve detailed user information for a specific user ID.")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(
-            @Parameter(description = "ID of the user to retrieve") @PathVariable Long id) {
+            @Parameter(description = "ID of the user to retrieve", required = true) @PathVariable Long id) {
         UserResponse user = userService.getUserById(id);
         return ResponseEntity.ok(ApiResponse.success(user, "Retrieved user details"));
     }
@@ -53,7 +53,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     @Operation(summary = "Update user details", description = "Requires ADMIN or MANAGER role. Updates email, full name, role, and active status.")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
-            @Parameter(description = "ID of the user to update") @PathVariable Long id,
+            @Parameter(description = "ID of the user to update", required = true) @PathVariable Long id,
             @Valid @RequestBody UserUpdateRequest updateRequest) {
         UserResponse updated = userService.updateUser(id, updateRequest);
         return ResponseEntity.ok(ApiResponse.success(updated, "User updated successfully"));
@@ -63,7 +63,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Toggle user active status", description = "Requires ADMIN role. Inverts the user active flag between true and false.")
     public ResponseEntity<ApiResponse<Void>> toggleUserStatus(
-            @Parameter(description = "ID of the user to toggle status") @PathVariable Long id) {
+            @Parameter(description = "ID of the user to toggle status", required = true) @PathVariable Long id) {
         userService.toggleUserStatus(id);
         return ResponseEntity.ok(ApiResponse.success(null, "User active status toggled"));
     }
@@ -72,7 +72,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete user", description = "Requires ADMIN role. Permanently deletes a user account by ID.")
     public ResponseEntity<ApiResponse<Void>> deleteUser(
-            @Parameter(description = "ID of the user to delete") @PathVariable Long id) {
+            @Parameter(description = "ID of the user to delete", required = true) @PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(ApiResponse.success(null, "User deleted successfully"));
     }

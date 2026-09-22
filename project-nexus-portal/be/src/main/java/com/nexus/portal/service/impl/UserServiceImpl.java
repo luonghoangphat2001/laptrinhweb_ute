@@ -2,8 +2,8 @@ package com.nexus.portal.service.impl;
 
 import com.nexus.portal.dto.request.UserUpdateRequest;
 import com.nexus.portal.dto.response.UserResponse;
+import com.nexus.portal.enums.RoleName;
 import com.nexus.portal.model.Role;
-import com.nexus.portal.model.RoleName;
 import com.nexus.portal.model.User;
 import com.nexus.portal.exception.BadRequestException;
 import com.nexus.portal.exception.ResourceNotFoundException;
