@@ -1,42 +1,74 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, ShieldCheck, FileText, Settings, Layers } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Users,
+  ShieldCheck,
+  FileText,
+  Users2,
+  BookmarkCheck,
+  Compass,
+  Layers,
+  Sparkles
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const Sidebar = ({ isOpen }) => {
-  const { hasRole } = useAuth();
+  const { user, hasRole } = useAuth();
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Thesis Topics', path: '/topics', icon: FileText },
+    { name: 'My Team', path: '/teams', icon: Users2 },
+    { name: 'Topic Registrations', path: '/registrations', icon: BookmarkCheck },
+    { name: 'Matchmaking Board', path: '/matchmaking', icon: Compass },
     { name: 'User Management', path: '/users', icon: Users, adminOnly: true },
     { name: 'Roles & Access', path: '/roles', icon: ShieldCheck, adminOnly: true },
-    { name: 'Thesis & Topics', path: '/topics', icon: FileText },
-    { name: 'System Settings', path: '/settings', icon: Settings },
   ];
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 bg-slate-950 border-r border-slate-800 transition-all duration-300 flex flex-col ${
+      className={`fixed inset-y-0 left-0 z-40 bg-white border-r border-[#ebedf2] transition-all duration-300 flex flex-col ${
         isOpen ? 'w-64' : 'w-20'
       }`}
     >
       {/* Brand Header */}
-      <div className="h-16 flex items-center px-6 border-b border-slate-800/80">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
-            <Layers className="w-5 h-5" />
+      <div className="h-16 flex items-center px-6 border-b border-[#ebedf2]">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#da8cff] to-[#9a55ff] flex items-center justify-center text-white shadow-sm">
+            <Layers className="w-4 h-4" />
           </div>
           {isOpen && (
-            <div className="flex flex-col">
-              <span className="font-bold text-base text-white tracking-tight">Nexus Portal</span>
-              <span className="text-[10px] text-brand-500 font-mono font-medium tracking-wider uppercase">Enterprise v1.0</span>
+            <div className="flex items-baseline space-x-1.5">
+              <span className="font-bold text-lg text-[#b66dff] tracking-tight">Purple</span>
+              <span className="text-xs font-semibold text-slate-700">Nexus</span>
             </div>
           )}
         </div>
       </div>
 
+      {/* Profile Card (Signature Purple Admin sidebar profile) */}
+      {isOpen && (
+        <div className="px-5 py-4 border-b border-[#f3f3f3] flex items-center space-x-3">
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#da8cff] to-[#9a55ff] flex items-center justify-center text-white font-bold text-sm">
+              {user?.fullName?.charAt(0) || user?.username?.charAt(0) || 'U'}
+            </div>
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#1bcfb4] border-2 border-white rounded-full"></span>
+          </div>
+          <div className="overflow-hidden">
+            <p className="text-xs font-bold text-[#343a40] truncate leading-tight">
+              {user?.fullName || user?.username || 'David Grey. H'}
+            </p>
+            <p className="text-[11px] text-slate-400 truncate mt-0.5">
+              {user?.roles?.[0]?.replace('ROLE_', '') || 'Project Manager'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Navigation Links */}
-      <div className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
+      <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           if (item.adminOnly && !hasRole('ROLE_ADMIN')) {
             return null;
@@ -49,26 +81,26 @@ export const Sidebar = ({ isOpen }) => {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all ${
+                `flex items-center space-x-3 px-4 py-2.5 rounded-lg text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-brand-500/10 text-brand-400 border border-brand-500/30 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                    ? 'text-[#b66dff] font-semibold bg-[#f8f2ff]'
+                    : 'text-[#495057] hover:text-[#b66dff] hover:bg-[#faf8fd]'
                 }`
               }
             >
-              <Icon className="w-5 h-5 shrink-0" />
+              <Icon className="w-4 h-4 shrink-0" />
               {isOpen && <span>{item.name}</span>}
             </NavLink>
           );
         })}
       </div>
 
-      {/* Footer Info */}
+      {/* Footer System Status */}
       {isOpen && (
-        <div className="p-4 border-t border-slate-800/80 bg-slate-900/30">
-          <div className="flex items-center space-x-2 text-[11px] text-slate-500">
-            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-            <span>Backend: Connected (MySQL)</span>
+        <div className="p-4 border-t border-[#ebedf2] bg-white">
+          <div className="flex items-center space-x-2 text-[11px] text-slate-400">
+            <div className="w-2 h-2 rounded-full bg-[#1bcfb4]"></div>
+            <span>Purple Admin v1.0</span>
           </div>
         </div>
       )}

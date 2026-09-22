@@ -30,9 +30,8 @@ export const LoginPage = () => {
           email,
           password,
           fullName,
-          roles: ['ROLE_ADMIN'], // Grant admin for initial setup demo
+          roles: ['ROLE_ADMIN'],
         });
-        // Auto login after registration
         await login(usernameOrEmail, password);
       } else {
         await login(usernameOrEmail, password);
@@ -46,29 +45,25 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Ambient background glow */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl shadow-black/80 relative z-10">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-4 relative">
+      <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-3xl p-8 shadow-lg relative z-10">
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-xl shadow-brand-500/30 mb-4">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-r from-[#da8cff] to-[#9a55ff] flex items-center justify-center text-white shadow-md shadow-brand-500/20 mb-3 p-3">
             <Layers className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
             {isRegisterMode ? 'Create Account' : 'Welcome to Nexus Portal'}
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-slate-500 text-xs mt-1">
             {isRegisterMode
               ? 'Register a new administrator or user account'
-              : 'Sign in to access your administrative dashboard'}
+              : 'Sign in to access your graduation portal'}
           </p>
         </div>
 
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center space-x-3 text-red-400 text-sm">
-            <AlertCircle className="w-5 h-5 shrink-0" />
+          <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-center space-x-2.5 text-rose-700 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -77,7 +72,7 @@ export const LoginPage = () => {
           {isRegisterMode && (
             <>
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
                   Full Name
                 </label>
                 <input
@@ -86,12 +81,12 @@ export const LoginPage = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="e.g. Nguyen Van A"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#b66dff] transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
                   Email Address
                 </label>
                 <input
@@ -99,43 +94,43 @@ export const LoginPage = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@company.com"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+                  placeholder="name@university.edu.vn"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#b66dff] transition-colors"
                 />
               </div>
             </>
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
               {isRegisterMode ? 'Username' : 'Username or Email'}
             </label>
             <div className="relative">
-              <User className="w-5 h-5 text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
+              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
               <input
                 type="text"
                 required
                 value={usernameOrEmail}
                 onChange={(e) => setUsernameOrEmail(e.target.value)}
-                placeholder={isRegisterMode ? 'Choose username' : 'admin or user@domain.com'}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+                placeholder={isRegisterMode ? 'Choose username' : 'admin or individual_user'}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#b66dff] transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
               Password
             </label>
             <div className="relative">
-              <Lock className="w-5 h-5 text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#b66dff] transition-colors"
               />
             </div>
           </div>
@@ -143,10 +138,10 @@ export const LoginPage = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-2 bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-brand-500/25 flex items-center justify-center space-x-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full mt-2 bg-gradient-to-r from-[#da8cff] to-[#9a55ff] hover:opacity-95 text-white font-semibold py-2.5 px-4 rounded-xl shadow-xs flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
           >
             {isSubmitting ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <>
                 <span>{isRegisterMode ? 'Complete Registration' : 'Sign In'}</span>
@@ -157,7 +152,7 @@ export const LoginPage = () => {
         </form>
 
         {!isRegisterMode && (
-          <div className="mt-6 pt-5 border-t border-slate-800/80">
+          <div className="mt-6 pt-5 border-t border-slate-100">
             <p className="text-xs text-slate-400 font-medium mb-2.5 text-center">
               Quick Demo Accounts:
             </p>
@@ -168,10 +163,10 @@ export const LoginPage = () => {
                   setUsernameOrEmail('superadmin');
                   setPassword('password123');
                 }}
-                className="px-3 py-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-brand-500/50 rounded-xl text-left transition-all group cursor-pointer"
+                className="px-3 py-2 bg-slate-50 hover:bg-[#f8f2ff]/50 border border-slate-200 hover:border-[#e1c2ff] rounded-xl text-left transition-all"
               >
-                <div className="text-[11px] font-semibold text-brand-400 group-hover:text-brand-300">Admin</div>
-                <div className="text-xs text-slate-300 font-mono">superadmin</div>
+                <div className="text-[11px] font-semibold text-[#b66dff]">Admin</div>
+                <div className="text-xs text-slate-600 font-mono">superadmin</div>
               </button>
               <button
                 type="button"
@@ -179,10 +174,10 @@ export const LoginPage = () => {
                   setUsernameOrEmail('individual_user');
                   setPassword('password123');
                 }}
-                className="px-3 py-2 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-emerald-500/50 rounded-xl text-left transition-all group cursor-pointer"
+                className="px-3 py-2 bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 rounded-xl text-left transition-all"
               >
-                <div className="text-[11px] font-semibold text-emerald-400 group-hover:text-emerald-300">Individual</div>
-                <div className="text-xs text-slate-300 font-mono">individual_user</div>
+                <div className="text-[11px] font-semibold text-emerald-700">Student</div>
+                <div className="text-xs text-slate-600 font-mono">individual_user</div>
               </button>
             </div>
           </div>
@@ -195,7 +190,7 @@ export const LoginPage = () => {
               setIsRegisterMode(!isRegisterMode);
               setErrorMessage('');
             }}
-            className="text-xs text-brand-400 hover:text-brand-300 transition-colors"
+            className="text-xs text-[#b66dff] hover:text-[#b66dff] font-medium transition-colors"
           >
             {isRegisterMode
               ? 'Already have an account? Sign in'
@@ -206,3 +201,5 @@ export const LoginPage = () => {
     </div>
   );
 };
+
+export default LoginPage;

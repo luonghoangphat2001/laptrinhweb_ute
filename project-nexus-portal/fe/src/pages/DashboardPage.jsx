@@ -1,6 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import api from '../services/api';
-import { Users, ShieldCheck, Activity, Clock, ArrowUpRight, CheckCircle2, AlertTriangle } from 'lucide-react';
+import {
+  Home,
+  Users,
+  ShieldCheck,
+  Activity,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  FileText,
+  Compass,
+  Users2,
+  BookmarkCheck,
+  TrendingUp,
+  Bookmark,
+  Gem
+} from 'lucide-react';
 
 export const DashboardPage = () => {
   const [stats, setStats] = useState(null);
@@ -29,171 +45,212 @@ export const DashboardPage = () => {
     fetchStats();
   }, []);
 
-  const kpis = [
+  // The 3 iconic Purple Admin metric cards with exact gradients and circular watermarks
+  const cards = [
     {
-      label: 'Total Registered Users',
-      value: stats ? stats.totalUsers : 0,
-      icon: Users,
-      color: 'from-blue-500 to-indigo-600',
-      change: 'Active in system',
+      title: 'Total Enrolled Users',
+      value: stats ? stats.totalUsers : '0',
+      subtitle: 'Increased by 60%',
+      gradient: 'bg-gradient-to-r from-[#ffbf96] to-[#fe7096]', // Purple Admin Danger Gradient
+      icon: TrendingUp,
     },
     {
-      label: 'Active Accounts',
-      value: stats ? stats.activeUsers : 0,
-      icon: CheckCircle2,
-      color: 'from-emerald-500 to-teal-600',
-      change: 'Verified accounts',
+      title: 'Active Accounts',
+      value: stats ? stats.activeUsers : '0',
+      subtitle: 'Decreased by 10%',
+      gradient: 'bg-gradient-to-r from-[#90caf9] to-[#047edf]', // Purple Admin Info Gradient
+      icon: Bookmark,
     },
     {
-      label: 'Configured Roles',
-      value: stats ? stats.totalRoles : 0,
-      icon: ShieldCheck,
-      color: 'from-brand-500 to-emerald-600',
-      change: 'RBAC permissions',
+      title: 'Security Roles',
+      value: stats ? stats.totalRoles : '0',
+      subtitle: 'Increased by 5%',
+      gradient: 'bg-gradient-to-r from-[#84d9d2] to-[#07cdae]', // Purple Admin Success Gradient
+      icon: Gem,
     },
     {
-      label: 'Service Uptime',
+      title: 'System Uptime',
       value: stats ? `${Math.floor(stats.systemUptimeSeconds / 60)} min` : '0 min',
+      subtitle: 'JVM Online',
+      gradient: 'bg-gradient-to-r from-[#da8cff] to-[#9a55ff]', // Purple Admin Primary Gradient
       icon: Clock,
-      color: 'from-amber-500 to-orange-600',
-      change: 'JVM runtime',
     },
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Page Title & Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-            Enterprise Dashboard Overview
-          </h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Real-time telemetry, user management metrics and thesis monitoring.
-          </p>
+    <div className="space-y-6 animate-in fade-in duration-200">
+      {/* Purple Admin Title Banner */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#da8cff] to-[#9a55ff] flex items-center justify-center text-white shadow-xs">
+            <Home className="w-4 h-4" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-[#343a40]">Dashboard</h1>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-3">
-          {error ? (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-400 mr-2"></span>
-              Backend API Offline
-            </span>
-          ) : (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
-              Spring Boot 3 API Online
-            </span>
-          )}
+        <div className="flex items-center space-x-2 text-xs text-slate-400">
+          <span>Overview</span>
+          <span className="text-[#b66dff] font-semibold">• Live Telemetry</span>
         </div>
       </div>
 
-      {/* Explicit Error Banner */}
+      {/* Error Alert if API unreachable */}
       {error && (
-        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start space-x-3 text-red-400 text-sm">
+        <div className="p-4 rounded-xl bg-[#fe7c96]/10 border border-[#fe7c96]/30 flex items-start space-x-3 text-[#fe7c96] text-sm">
           <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-red-300">Could Not Connect to Backend Service</p>
-            <p className="text-xs mt-0.5 text-red-400">{error}</p>
+            <p className="font-semibold">Backend Offline</p>
+            <p className="text-xs mt-0.5">{error}</p>
           </div>
         </div>
       )}
 
-      {/* KPI Cards Grid */}
+      {/* 4 Purple Admin Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {kpis.map((kpi, idx) => {
-          const Icon = kpi.icon;
+        {cards.map((card, idx) => {
+          const Icon = card.icon;
           return (
             <div
               key={idx}
-              className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-5 hover:border-slate-700 transition-all shadow-lg shadow-black/20 relative overflow-hidden group"
+              className={`${card.gradient} text-white rounded-xl p-6 shadow-sm relative overflow-hidden transition-transform hover:-translate-y-0.5`}
             >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  {kpi.label}
-                </span>
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${kpi.color} flex items-center justify-center text-white shadow-md`}>
-                  <Icon className="w-5 h-5" />
+              {/* Decorative Circle Pattern (watermark) */}
+              <div className="circle-pattern"></div>
+
+              <div className="relative z-10 flex items-start justify-between">
+                <div>
+                  <h4 className="text-sm font-normal text-white/90">{card.title}</h4>
+                  <h2 className="text-3xl font-bold tracking-tight mt-2.5">
+                    {loading ? '...' : card.value}
+                  </h2>
+                  <p className="text-xs text-white/80 mt-3">{card.subtitle}</p>
+                </div>
+                <div className="p-1 text-white/60">
+                  <Icon className="w-6 h-6" />
                 </div>
               </div>
-              <div className="mt-4 flex items-baseline justify-between">
-                <span className="text-3xl font-bold text-white tracking-tight">
-                  {loading ? '...' : kpi.value}
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-slate-500 flex items-center">
-                <ArrowUpRight className="w-3.5 h-3.5 text-brand-400 mr-1 inline" />
-                <span>{kpi.change}</span>
-              </p>
             </div>
           );
         })}
       </div>
 
-      {/* Analytics Breakdown & Recent Activity */}
+      {/* Quick Launch Cards (Purple Admin Style) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <NavLink
+          to="/topics"
+          className="bg-white p-4 rounded-xl border border-[#ebedf2] hover:border-[#b66dff]/40 shadow-xs hover:shadow-md transition-all flex items-center space-x-3"
+        >
+          <div className="w-10 h-10 rounded-lg bg-[#f8f2ff] text-[#b66dff] flex items-center justify-center">
+            <FileText className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-[#343a40] text-sm">Thesis Topics</h3>
+            <p className="text-[11px] text-slate-400">Discover & compare</p>
+          </div>
+        </NavLink>
+
+        <NavLink
+          to="/teams"
+          className="bg-white p-4 rounded-xl border border-[#ebedf2] hover:border-[#047edf]/40 shadow-xs hover:shadow-md transition-all flex items-center space-x-3"
+        >
+          <div className="w-10 h-10 rounded-lg bg-[#f0f7ff] text-[#047edf] flex items-center justify-center">
+            <Users2 className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-[#343a40] text-sm">Team Roster</h3>
+            <p className="text-[11px] text-slate-400">1-3 students per team</p>
+          </div>
+        </NavLink>
+
+        <NavLink
+          to="/registrations"
+          className="bg-white p-4 rounded-xl border border-[#ebedf2] hover:border-[#1bcfb4]/40 shadow-xs hover:shadow-md transition-all flex items-center space-x-3"
+        >
+          <div className="w-10 h-10 rounded-lg bg-[#e8faf7] text-[#1bcfb4] flex items-center justify-center">
+            <BookmarkCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-[#343a40] text-sm">Registrations</h3>
+            <p className="text-[11px] text-slate-400">Proposals & reviews</p>
+          </div>
+        </NavLink>
+
+        <NavLink
+          to="/matchmaking"
+          className="bg-white p-4 rounded-xl border border-[#ebedf2] hover:border-[#ffbf96]/40 shadow-xs hover:shadow-md transition-all flex items-center space-x-3"
+        >
+          <div className="w-10 h-10 rounded-lg bg-[#fff8f4] text-[#fe7096] flex items-center justify-center">
+            <Compass className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-[#343a40] text-sm">Matchmaking</h3>
+            <p className="text-[11px] text-slate-400">Find team in faculty</p>
+          </div>
+        </NavLink>
+      </div>
+
+      {/* Main Content Panels */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Role Distribution Panel */}
-        <div className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-6 shadow-lg shadow-black/20">
-          <h2 className="text-base font-bold text-white flex items-center space-x-2">
-            <ShieldCheck className="w-4 h-4 text-brand-500" />
+        <div className="bg-white border border-[#ebedf2] rounded-xl p-6 shadow-xs">
+          <h2 className="text-sm font-bold text-[#343a40] flex items-center space-x-2">
+            <ShieldCheck className="w-4 h-4 text-[#b66dff]" />
             <span>Role Distribution</span>
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
-            Configured permissions & user categorization
-          </p>
+          <p className="text-slate-400 text-xs mt-1">Configured permissions & user categorization</p>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-5 space-y-4">
             {stats && stats.userRoleDistribution ? (
               Object.entries(stats.userRoleDistribution).map(([role, count]) => (
                 <div key={role} className="space-y-1.5">
                   <div className="flex justify-between text-xs">
-                    <span className="font-mono text-slate-300">{role.replace('ROLE_', '')}</span>
-                    <span className="text-slate-400 font-semibold">{count} user(s)</span>
+                    <span className="font-medium text-slate-700">{role.replace('ROLE_', '')}</span>
+                    <span className="text-slate-500 font-semibold">{count} user(s)</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-[#f2f4f9] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-brand-500 to-emerald-400 rounded-full"
+                      className="h-full bg-gradient-to-r from-[#da8cff] to-[#9a55ff] rounded-full"
                       style={{ width: `${Math.min(100, (count / (stats.totalUsers || 1)) * 100)}%` }}
                     ></div>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-500 py-4 text-center">No role metrics available.</p>
+              <p className="text-xs text-slate-400 py-4 text-center">No role metrics available.</p>
             )}
           </div>
         </div>
 
         {/* Recent Activities Log */}
-        <div className="lg:col-span-2 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-6 shadow-lg shadow-black/20">
+        <div className="lg:col-span-2 bg-white border border-[#ebedf2] rounded-xl p-6 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center space-x-2">
-                <Activity className="w-4 h-4 text-brand-500" />
+              <h2 className="text-sm font-bold text-[#343a40] flex items-center space-x-2">
+                <Activity className="w-4 h-4 text-[#b66dff]" />
                 <span>Recent System Activities</span>
               </h2>
-              <p className="text-slate-400 text-xs mt-1">
-                Audit trail of administrative actions and registrations
-              </p>
+              <p className="text-slate-400 text-xs mt-1">Audit trail of proposals and administrative events</p>
             </div>
           </div>
 
-          <div className="divide-y divide-slate-800/60">
+          <div className="divide-y divide-[#f3f3f3]">
             {stats && stats.recentActivities && stats.recentActivities.length > 0 ? (
               stats.recentActivities.map((act, i) => (
-                <div key={i} className="py-3.5 flex items-center justify-between text-sm">
+                <div key={i} className="py-3 flex items-center justify-between text-xs">
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 rounded-full bg-brand-500"></div>
-                    <span className="text-slate-200 font-medium">{act.action}</span>
-                    <span className="text-xs text-brand-400 font-mono">@{act.username}</span>
+                    <div className="w-2 h-2 rounded-full bg-[#b66dff]"></div>
+                    <span className="text-slate-700 font-medium">{act.action}</span>
+                    <span className="text-[#b66dff] font-mono">@{act.username}</span>
                   </div>
-                  <span className="text-xs text-slate-500">{new Date(act.timestamp).toLocaleTimeString()}</span>
+                  <span className="text-slate-400 font-mono">
+                    {new Date(act.timestamp).toLocaleTimeString()}
+                  </span>
                 </div>
               ))
             ) : (
-              <div className="py-8 text-center text-slate-500 text-sm">
-                No recent activity records found.
-              </div>
+              <div className="py-8 text-center text-slate-400 text-xs">No recent activity records.</div>
             )}
           </div>
         </div>
@@ -201,3 +258,5 @@ export const DashboardPage = () => {
     </div>
   );
 };
+
+export default DashboardPage;

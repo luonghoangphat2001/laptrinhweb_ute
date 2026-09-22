@@ -8,6 +8,10 @@ import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { UsersPage } from './pages/UsersPage';
 import { RolesPage } from './pages/RolesPage';
+import { TopicsPage } from './pages/TopicsPage';
+import { TeamsPage } from './pages/TeamsPage';
+import { RegistrationsPage } from './pages/RegistrationsPage';
+import { MatchmakingPage } from './pages/MatchmakingPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App = () => {
@@ -18,7 +22,7 @@ export const App = () => {
           {/* Public Route */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Protected Admin Dashboard Routes */}
+          {/* Protected Routes */}
           <Route
             path="/"
             element={
@@ -29,6 +33,14 @@ export const App = () => {
           >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
+
+            {/* Academic & Thesis Management */}
+            <Route path="topics" element={<TopicsPage />} />
+            <Route path="teams" element={<TeamsPage />} />
+            <Route path="registrations" element={<RegistrationsPage />} />
+            <Route path="matchmaking" element={<MatchmakingPage />} />
+
+            {/* Admin Management */}
             <Route
               path="users"
               element={
@@ -45,6 +57,7 @@ export const App = () => {
                 </RoleBasedRoute>
               }
             />
+
             {/* Fallback for other nested paths */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>

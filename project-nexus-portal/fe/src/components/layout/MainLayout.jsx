@@ -7,11 +7,11 @@ export const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex">
+    <div className="min-h-screen bg-[#f2f4f9] text-[#343a40] flex">
       {/* Navigation Sidebar */}
       <Sidebar isOpen={sidebarOpen} />
 
-      {/* Main Body Area */}
+      {/* Main Content Area */}
       <div
         className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${
           sidebarOpen ? 'ml-64' : 'ml-20'
@@ -19,8 +19,8 @@ export const MainLayout = () => {
       >
         <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-        {/* Dynamic Nested Content Rendering */}
-        <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
+        {/* Main Body */}
+        <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
       </div>

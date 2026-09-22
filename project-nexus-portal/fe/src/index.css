@@ -4,26 +4,41 @@
 
 @layer base {
   body {
-    @apply bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-brand-500 selection:text-white;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #f2f4f9;
+    color: #343a40;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 }
 
-/* Custom modern scrollbar */
+/* Purple Admin card decorative circles */
+.circle-pattern {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 140px;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.25) 40%, transparent 41%),
+              radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.18) 55%, transparent 56%);
+}
+
+/* Purple Admin smooth scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #f2f4f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #d1d5db;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #b66dff;
 }
