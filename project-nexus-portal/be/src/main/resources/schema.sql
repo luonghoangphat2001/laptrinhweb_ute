@@ -6,7 +6,7 @@
 -- 1. Roles Table
 CREATE TABLE IF NOT EXISTS roles (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  name ENUM('ROLE_ADMIN','ROLE_MANAGER','ROLE_USER') NOT NULL,
+  name VARCHAR(60) NOT NULL,
   description VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uk_roles_name (name)

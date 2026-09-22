@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import com.nexus.portal.model.RoleName;
 
 import java.util.Set;
 
@@ -30,12 +31,12 @@ public class RegisterRequest {
     private String fullName;
 
     @Schema(description = "Set of roles to assign (optional)", example = "[\"ROLE_USER\"]")
-    private Set<String> roles;
+    private Set<RoleName> roles;
 
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String email, String password, String fullName, Set<String> roles) {
+    public RegisterRequest(String username, String email, String password, String fullName, Set<RoleName> roles) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -75,11 +76,11 @@ public class RegisterRequest {
         this.fullName = fullName;
     }
 
-    public Set<String> getRoles() {
+    public Set<RoleName> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<String> roles) {
+    public void setRoles(Set<RoleName> roles) {
         this.roles = roles;
     }
 }

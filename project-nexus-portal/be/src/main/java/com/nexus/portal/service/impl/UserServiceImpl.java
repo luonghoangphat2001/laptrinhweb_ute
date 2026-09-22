@@ -66,15 +66,10 @@ public class UserServiceImpl implements UserService {
 
         if (updateRequest.getRoles() != null && !updateRequest.getRoles().isEmpty()) {
             Set<Role> updatedRoles = new HashSet<>();
-            for (String roleNameStr : updateRequest.getRoles()) {
-                try {
-                    RoleName roleName = RoleName.valueOf(roleNameStr.startsWith("ROLE_") ? roleNameStr : "ROLE_" + roleNameStr);
-                    Role role = roleRepository.findByName(roleName)
-                            .orElseGet(() -> roleRepository.save(Role.builder().name(roleName).build()));
-                    updatedRoles.add(role);
-                } catch (IllegalArgumentException ex) {
-                    throw new BadRequestException("Invalid role name: " + roleNameStr);
-                }
+            for (RoleName roleName : updateRequest.getRoles()) {
+                Role role = roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new ResourceNotFoundException("Role", "name", roleName));
+                updatedRoles.add(role);
             }
             user.setRoles(updatedRoles);
         }

@@ -43,13 +43,8 @@ public class AuthController {
                             examples = {
                                     @ExampleObject(
                                             name = "Admin Account",
-                                            summary = "Super Administrator (superadmin)",
+                                            summary = "System Administrator (superadmin)",
                                             value = "{\"usernameOrEmail\": \"superadmin\", \"password\": \"password123\"}"
-                                    ),
-                                    @ExampleObject(
-                                            name = "Individual User Account",
-                                            summary = "Individual User (individual_user)",
-                                            value = "{\"usernameOrEmail\": \"individual_user\", \"password\": \"password123\"}"
                                     )
                             }
                     )

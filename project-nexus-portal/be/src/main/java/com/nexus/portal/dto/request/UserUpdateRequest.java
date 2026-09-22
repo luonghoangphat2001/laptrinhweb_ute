@@ -1,5 +1,6 @@
 package com.nexus.portal.dto.request;
 
+import com.nexus.portal.model.RoleName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -25,12 +26,12 @@ public class UserUpdateRequest {
     private Boolean active;
 
     @Schema(description = "Assigned roles for the user", example = "[\"ROLE_USER\"]")
-    private Set<String> roles;
+    private Set<RoleName> roles;
 
     public UserUpdateRequest() {
     }
 
-    public UserUpdateRequest(String fullName, String email, String avatarUrl, Boolean active, Set<String> roles) {
+    public UserUpdateRequest(String fullName, String email, String avatarUrl, Boolean active, Set<RoleName> roles) {
         this.fullName = fullName;
         this.email = email;
         this.avatarUrl = avatarUrl;
@@ -70,11 +71,11 @@ public class UserUpdateRequest {
         this.active = active;
     }
 
-    public Set<String> getRoles() {
+    public Set<RoleName> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<String> roles) {
+    public void setRoles(Set<RoleName> roles) {
         this.roles = roles;
     }
 }

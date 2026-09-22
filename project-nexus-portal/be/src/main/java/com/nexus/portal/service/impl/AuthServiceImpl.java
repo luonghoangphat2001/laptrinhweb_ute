@@ -82,38 +82,29 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Email is already in use!");
         }
 
+        Set<Role> roles = new HashSet<>();
+        Set<RoleName> requestedRoles = registerRequest.getRoles();
+
+        if (requestedRoles == null || requestedRoles.isEmpty()) {
+            Role defaultRole = roleRepository.findByName(RoleName.ROLE_USER)
+                    .orElseThrow(() -> new ResourceNotFoundException("Role", "name", RoleName.ROLE_USER));
+            roles.add(defaultRole);
+        } else {
+            for (RoleName roleName : requestedRoles) {
+                Role role = roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new ResourceNotFoundException("Role", "name", roleName));
+                roles.add(role);
+            }
+        }
+
         User user = User.builder()
                 .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
                 .fullName(registerRequest.getFullName())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .active(true)
-                .roles(new HashSet<>())
+                .roles(roles)
                 .build();
-
-        Set<String> strRoles = registerRequest.getRoles();
-        if (strRoles == null || strRoles.isEmpty()) {
-            Role userRole = getOrCreateRole(RoleName.ROLE_USER, "Standard User Role");
-            user.getRoles().add(userRole);
-        } else {
-            strRoles.forEach(roleName -> {
-                switch (roleName.toUpperCase()) {
-                    case "ADMIN":
-                    case "ROLE_ADMIN":
-                        Role adminRole = getOrCreateRole(RoleName.ROLE_ADMIN, "System Administrator Role");
-                        user.getRoles().add(adminRole);
-                        break;
-                    case "MANAGER":
-                    case "ROLE_MANAGER":
-                        Role managerRole = getOrCreateRole(RoleName.ROLE_MANAGER, "Manager Role");
-                        user.getRoles().add(managerRole);
-                        break;
-                    default:
-                        Role defaultRole = getOrCreateRole(RoleName.ROLE_USER, "Standard User Role");
-                        user.getRoles().add(defaultRole);
-                }
-            });
-        }
 
         User savedUser = userRepository.save(user);
         return mapToUserResponse(savedUser);
@@ -131,11 +122,6 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", principal.getId()));
 
         return mapToUserResponse(user);
-    }
-
-    private Role getOrCreateRole(RoleName name, String description) {
-        return roleRepository.findByName(name)
-                .orElseGet(() -> roleRepository.save(Role.builder().name(name).description(description).build()));
     }
 
     private UserResponse mapToUserResponse(User user) {
